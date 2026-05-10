@@ -1,12 +1,19 @@
 import OpenAI from "openai";
 import { buildStoryPrompt } from "@/lib/prompts";
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 export async function POST(req: Request) {
   try {
+    const apiKey = process.env.OPENAI_API_KEY;
+
+    if (!apiKey) {
+      return Response.json(
+        { result: "Error: OPENAI_API_KEY is not configured." },
+        { status: 500 },
+      );
+    }
+
+    const client = new OpenAI({ apiKey });
+
     const body = await req.json();
 
     console.log("=== INPUT ===");
