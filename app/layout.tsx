@@ -15,7 +15,17 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "StoryForge",
   description:
-    "Al-Based Story Generation System for Tabletop Role-Playing Games",
+    "AI-powered TTRPG adventure generator with configurable storytelling parameters and structured narrative outputs.",
+  themeColor: [
+    {
+      media: "(prefers-color-scheme: light)",
+      color: "#ffffff",
+    },
+    {
+      media: "(prefers-color-scheme: dark)",
+      color: "#111827",
+    },
+  ],
 };
 
 export default function RootLayout({
