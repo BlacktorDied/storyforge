@@ -14,6 +14,7 @@ Describe what changed and why.
 - [ ] `npm run lint`
 - [ ] `npm run build`
 - [ ] Manual testing completed
+- [ ] Added SVG assets were optimized (if applicable)
 
 ## Screenshots (optional)
 
