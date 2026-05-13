@@ -8,10 +8,9 @@ type Props = {
   customValue: string;
   setCustomValue: (v: string) => void;
   info?: string;
+  error?: string;
+  clearError?: () => void;
 };
-
-const fieldClassName =
-  "mt-1 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20";
 
 export default function SelectWithCustomOption({
   label,
@@ -21,6 +20,8 @@ export default function SelectWithCustomOption({
   customValue,
   setCustomValue,
   info,
+  error,
+  clearError,
 }: Props) {
   return (
     <div>
@@ -31,8 +32,11 @@ export default function SelectWithCustomOption({
 
       <select
         value={value}
-        onChange={(e) => setValue(e.target.value)}
-        className={fieldClassName}
+        onChange={(e) => {
+          setValue(e.target.value);
+          clearError?.();
+        }}
+        className="mt-1 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
       >
         {options.map((o) => (
           <option key={o} value={o}>
@@ -45,9 +49,20 @@ export default function SelectWithCustomOption({
         <input
           placeholder={`Custom ${label.toLowerCase()}`}
           value={customValue}
-          onChange={(e) => setCustomValue(e.target.value)}
-          className={fieldClassName}
+          onChange={(e) => {
+            setCustomValue(e.target.value);
+            clearError?.();
+          }}
+          className={`mt-2 w-full rounded-md border bg-surface px-3 py-2 text-sm text-text shadow-sm outline-none transition
+    ${
+      error
+        ? "border-red-500 focus:border-red-500"
+        : "border-border focus:border-primary"
+    }`}
         />
+      )}
+      {error && (
+        <small className="mt-1 block text-sm text-red-500">{error}</small>
       )}
     </div>
   );

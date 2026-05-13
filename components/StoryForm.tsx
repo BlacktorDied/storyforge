@@ -1,0 +1,224 @@
+import MultiSelectWithMode from "./MultiSelectWithMode";
+import SelectWithCustomOption from "./SelectWithCustomOption";
+import InfoTooltip from "./InfoTooltip";
+import {
+  CLASSES,
+  GENRES,
+  LENGTHS,
+  LEVELS,
+  PARTY_SIZES,
+  RACES,
+  SETTINGS,
+} from "@/lib/data";
+
+type Mode = "all" | "custom";
+
+type Props = {
+  genre: string;
+  setGenre: (value: string) => void;
+  customGenre: string;
+  setCustomGenre: (value: string) => void;
+  genreError: string;
+  clearGenreError: () => void;
+
+  setting: string;
+  setSetting: (value: string) => void;
+  customSetting: string;
+  setCustomSetting: (value: string) => void;
+  settingError: string;
+  clearSettingError: () => void;
+
+  raceMode: Mode;
+  setRaceMode: (value: Mode) => void;
+  selectedRaces: string[];
+  setSelectedRaces: (value: string[]) => void;
+
+  classMode: Mode;
+  setClassMode: (value: Mode) => void;
+  selectedClasses: string[];
+  setSelectedClasses: (value: string[]) => void;
+
+  length: string;
+  setLength: (value: string) => void;
+
+  partySize: string;
+  setPartySize: (value: string) => void;
+
+  level: string;
+  setLevel: (value: string) => void;
+
+  loading: boolean;
+  onGenerate: () => void;
+};
+
+const selectClassName =
+  "mt-1 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20";
+
+export default function StoryForm({
+  genre,
+  setGenre,
+  customGenre,
+  setCustomGenre,
+  genreError,
+  clearGenreError,
+
+  setting,
+  setSetting,
+  customSetting,
+  setCustomSetting,
+  settingError,
+  clearSettingError,
+
+  raceMode,
+  setRaceMode,
+  selectedRaces,
+  setSelectedRaces,
+
+  classMode,
+  setClassMode,
+  selectedClasses,
+  setSelectedClasses,
+
+  length,
+  setLength,
+
+  partySize,
+  setPartySize,
+
+  level,
+  setLevel,
+
+  loading,
+  onGenerate,
+}: Props) {
+  return (
+    <aside className="space-y-4">
+      <SelectWithCustomOption
+        label="Genre"
+        options={GENRES}
+        value={genre}
+        setValue={setGenre}
+        customValue={customGenre}
+        setCustomValue={setCustomGenre}
+        error={genreError}
+        clearError={clearGenreError}
+      />
+
+      <SelectWithCustomOption
+        label="Setting"
+        options={SETTINGS}
+        value={setting}
+        setValue={setSetting}
+        customValue={customSetting}
+        setCustomValue={setCustomSetting}
+        error={settingError}
+        clearError={clearSettingError}
+      />
+
+      <MultiSelectWithMode
+        label="Allowed Races"
+        options={RACES}
+        mode={raceMode}
+        setMode={setRaceMode}
+        selected={selectedRaces}
+        setSelected={setSelectedRaces}
+        allDescription="Use all core D&D 5e races from the 2014 Player’s Handbook."
+      />
+
+      <MultiSelectWithMode
+        label="Allowed Classes"
+        options={CLASSES}
+        mode={classMode}
+        setMode={setClassMode}
+        selected={selectedClasses}
+        setSelected={setSelectedClasses}
+        allDescription="Use all classic D&D 5e classes from the 2014 Player’s Handbook."
+      />
+
+      <div>
+        <div>
+          <label className="font-semibold">Session Length</label>
+          <InfoTooltip
+            text={`
+Short: 2 encounters
+Medium: 3 encounters
+Long: 5 encounters
+`}
+          />
+        </div>
+
+        <select
+          value={length}
+          onChange={(e) => setLength(e.target.value)}
+          className={selectClassName}
+        >
+          {LENGTHS.map((l) => (
+            <option key={l} value={l}>
+              {l}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label className="block font-semibold">Party Size</label>
+        <select
+          value={partySize}
+          onChange={(e) => setPartySize(e.target.value)}
+          className={selectClassName}
+        >
+          {PARTY_SIZES.map((p) => (
+            <option key={p} value={p}>
+              {p} players
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <div>
+          <label className="font-semibold">Character Level</label>
+          <InfoTooltip text="Recommended level for the player character." />
+        </div>
+
+        <select
+          value={level}
+          onChange={(e) => setLevel(e.target.value)}
+          className={selectClassName}
+        >
+          {LEVELS.map((lvl) => (
+            <option key={lvl} value={lvl}>
+              Level {lvl}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <button
+        className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+        onClick={onGenerate}
+        disabled={loading}
+      >
+        {loading && (
+          <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+            />
+          </svg>
+        )}
+
+        {loading ? "Generating..." : "Generate"}
+      </button>
+    </aside>
+  );
+}
