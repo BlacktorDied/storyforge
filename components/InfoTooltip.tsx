@@ -6,7 +6,8 @@ export default function InfoTooltip({ text }: Props) {
   return (
     <span
       title={text}
-      className="ml-1 cursor-help text-muted whitespace-pre-line"
+      aria-label={text}
+      className="text-muted ml-1 inline-flex cursor-help items-center whitespace-pre-line"
     >
       ⓘ
     </span>

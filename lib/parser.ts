@@ -1,33 +1,14 @@
-export type ParsedNpc = {
-  name: string;
-  race: string;
-  class: string;
-  role: string;
-  location: string;
-  motivation: string;
-  description: string;
-};
-
-export type ParsedEncounter = {
-  title: string;
-  content: string;
-};
-
-export type ParsedStory = {
-  title: string;
-  setting: string;
-  background: string;
-  hook: string;
-  quest: string;
-  encounters: ParsedEncounter[];
-  npcs: ParsedNpc[];
-};
+import type { ParsedStory } from "@/lib/types";
 
 function extractSection(
   markdown: string,
   startHeader: string,
   endHeader?: string,
-) {
+): string {
+  // Match text after a specific "## Header".
+  // If endHeader is provided, stop before the next "## End Header".
+  // [\s\S] is used instead of "." so the match also includes line breaks.
+  // *? makes the match non-greedy, so it stops at the first matching end header.
   const pattern = endHeader
     ? new RegExp(`## ${startHeader}([\\s\\S]*?)## ${endHeader}`)
     : new RegExp(`## ${startHeader}([\\s\\S]*)`);
@@ -35,17 +16,25 @@ function extractSection(
   return markdown.match(pattern)?.[1]?.trim() || "";
 }
 
-function extractField(block: string, field: string) {
+function extractField(block: string, field: string): string {
+  // Match one markdown list field, for example "- Name: Aria".
+  // \s* allows optional spaces after the colon.
+  // (.*) captures the rest of that line as the field value.
   return block.match(new RegExp(`${field}:\\s*(.*)`))?.[1]?.trim() || "";
 }
 
 export function parseStory(markdown: string): ParsedStory {
+  // Match the first top-level markdown title: "# Title".
   const title = markdown.match(/^# (.*)/)?.[1]?.trim() || "";
 
   const setting = extractSection(markdown, "Setting", "Background");
   const background = extractSection(markdown, "Background", "Adventure Hook");
-  const hook = extractSection(markdown, "Adventure Hook", "Main Quest");
-  const quest = extractSection(markdown, "Main Quest", "Key Encounters");
+  const adventureHook = extractSection(
+    markdown,
+    "Adventure Hook",
+    "Main Quest",
+  );
+  const mainQuest = extractSection(markdown, "Main Quest", "Key Encounters");
   const encountersRaw = extractSection(markdown, "Key Encounters", "NPCs");
   const npcsRaw = extractSection(markdown, "NPCs");
 
@@ -77,6 +66,7 @@ export function parseStory(markdown: string): ParsedStory {
     role: extractField(block, "Role in story"),
     location: extractField(block, "Location"),
     motivation: extractField(block, "Motivation"),
+    // Capture everything after "Description:", including multiple lines.
     description: block.match(/Description:\s*([\s\S]*)/)?.[1]?.trim() || "",
   }));
 
@@ -84,8 +74,8 @@ export function parseStory(markdown: string): ParsedStory {
     title,
     setting,
     background,
-    hook,
-    quest,
+    adventureHook,
+    mainQuest,
     encounters,
     npcs,
   };

@@ -1,15 +1,22 @@
+import type { SelectionMode } from "@/lib/types";
+
 type Props = {
+  id?: string;
   label: string;
-  options: string[];
-  mode: "all" | "custom";
-  setMode: (mode: "all" | "custom") => void;
+  options: readonly string[];
+  mode: SelectionMode;
+  setMode: (mode: SelectionMode) => void;
   selected: string[];
   setSelected: (values: string[]) => void;
   allDescription: string;
   customDescription?: string;
+  error?: string;
+  onTouch?: () => void;
+  resetValidation?: () => void;
 };
 
 export default function MultiSelectWithMode({
+  id,
   label,
   options,
   mode,
@@ -18,42 +25,53 @@ export default function MultiSelectWithMode({
   setSelected,
   allDescription,
   customDescription = "Restrict generated NPCs to only the selected options.",
+  error,
+  onTouch,
+  resetValidation,
 }: Props) {
-  const optionCardClass = (active: boolean) =>
+  const getOptionCardClass = (active: boolean, hasError = false) =>
     `block cursor-pointer rounded border p-3 transition ${
-      active
-        ? "border-primary bg-primary/10"
-        : "border-border bg-surface hover:border-primary/60"
+      hasError
+        ? "border-error bg-error/10"
+        : active
+          ? "border-primary bg-primary/10"
+          : "border-border bg-surface hover:border-primary/60"
     }`;
 
   return (
-    <div>
+    <div id={id}>
       <label className="font-semibold">{label}</label>
 
       <div className="mt-2 space-y-2">
-        <label className={optionCardClass(mode === "all")}>
+        <label className={getOptionCardClass(mode === "all")}>
           <input
             type="radio"
             checked={mode === "all"}
             onChange={() => {
               setMode("all");
               setSelected([]);
+              resetValidation?.();
             }}
-            className="mr-2 accent-primary"
+            className="accent-primary mr-2"
           />
           <span className="font-medium">All official</span>
-          <p className="text-sm text-muted">{allDescription}</p>
+          <p className="text-muted text-sm">{allDescription}</p>
         </label>
 
-        <label className={optionCardClass(mode === "custom")}>
+        <label
+          className={getOptionCardClass(mode === "custom", Boolean(error))}
+        >
           <input
             type="radio"
             checked={mode === "custom"}
-            onChange={() => setMode("custom")}
-            className="mr-2 accent-primary"
+            onChange={() => {
+              setMode("custom");
+              resetValidation?.();
+            }}
+            className={`mr-2 ${error ? "accent-error" : "accent-primary"}`}
           />
           <span className="font-medium">Custom selection</span>
-          <p className="text-sm text-muted">{customDescription}</p>
+          <p className="text-muted text-sm">{customDescription}</p>
         </label>
       </div>
 
@@ -66,6 +84,8 @@ export default function MultiSelectWithMode({
                 checked={selected.includes(option)}
                 className="accent-primary"
                 onChange={(e) => {
+                  onTouch?.();
+
                   if (e.target.checked) {
                     setSelected([...selected, option]);
                   } else {
@@ -77,6 +97,10 @@ export default function MultiSelectWithMode({
             </label>
           ))}
         </div>
+      )}
+
+      {error && (
+        <small className="text-error mt-2 block text-sm">{error}</small>
       )}
     </div>
   );

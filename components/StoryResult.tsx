@@ -1,4 +1,4 @@
-import type { ParsedStory } from "@/lib/parser";
+import type { ParsedStory } from "@/lib/types";
 
 type Props = {
   story: ParsedStory;
@@ -21,12 +21,12 @@ export default function StoryResult({ story }: Props) {
 
       <section>
         <h3 className="font-semibold">Adventure Hook</h3>
-        <p>{story.hook}</p>
+        <p>{story.adventureHook}</p>
       </section>
 
       <section>
         <h3 className="font-semibold">Main Quest</h3>
-        <p>{story.quest}</p>
+        <p>{story.mainQuest}</p>
       </section>
 
       <section>
@@ -35,10 +35,10 @@ export default function StoryResult({ story }: Props) {
           {story.encounters.map((encounter, i) => (
             <div
               key={i}
-              className="rounded border border-border bg-surface p-3 print-card"
+              className="border-border bg-surface print-card rounded border p-3"
             >
               <h4 className="font-semibold">{encounter.title}</h4>
-              <p>{encounter.content}</p>
+              <p className="whitespace-pre-line">{encounter.content}</p>
             </div>
           ))}
         </div>
@@ -50,7 +50,7 @@ export default function StoryResult({ story }: Props) {
           {story.npcs.map((npc, i) => (
             <div
               key={i}
-              className="rounded border border-border bg-surface p-3 print-card"
+              className="border-border bg-surface print-card rounded border p-3"
             >
               <h4 className="font-semibold">{npc.name}</h4>
               <p>

@@ -25,12 +25,11 @@ Test final encounter content.
 
 ## NPCs
 
-### NPC
-- Name: Test NPC
+### Test NPC
 - Race: Human
 - Class: Fighter
 - Role in story: Test role
 - Location: Test location
 - Motivation: Test motivation
 - Description: Test description
-`;
+`.trim();

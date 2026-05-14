@@ -1,6 +1,7 @@
 {
   "name": "StoryForge",
   "short_name": "StoryForge",
+  "description": "AI-powered TTRPG adventure generator",
   "icons": [
     {
       "src": "/branding/png/storyforge-icon-512.png",
@@ -15,5 +16,6 @@
   ],
   "theme_color": "#111827",
   "background_color": "#111827",
-  "display": "standalone"
+  "display": "standalone",
+  "start_url": "/"
 }

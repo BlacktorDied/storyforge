@@ -5,7 +5,7 @@ import StoryResult from "@/components/StoryResult";
 import StorySkeleton from "@/components/StorySkeleton";
 import { useStoryGenerator } from "@/hooks/useStoryGenerator";
 
-export default function Home() {
+export default function StoryForgePage() {
   const story = useStoryGenerator();
 
   return (
@@ -13,14 +13,14 @@ export default function Home() {
       {story.parsed && !story.loading && (
         <div className="fixed top-30 right-2">
           <button
-            className="rounded-l-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-text shadow-sm transition hover:bg-background"
+            className="border-border bg-surface text-text hover:bg-background rounded-l-lg border px-4 py-2 text-sm font-medium shadow-sm transition"
             onClick={story.handleCopy}
           >
-            Copy
+            {story.copyStatus === "copied" ? "Copied!" : "Copy"}
           </button>
 
           <button
-            className="rounded-r-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-text shadow-sm transition hover:bg-background"
+            className="border-border bg-surface text-text hover:bg-background rounded-r-lg border px-4 py-2 text-sm font-medium shadow-sm transition"
             onClick={() => window.print()}
           >
             Download
@@ -30,16 +30,13 @@ export default function Home() {
 
       <StoryForm {...story.formProps} />
 
-      <section aria-label="Generated story">
-        {story.loading && <StorySkeleton length={story.length} />}
-
-        <section
-          id="print-area"
-          className="mt-6 w-full"
-          aria-label="Generated story output"
-        >
-          {story.parsed && <StoryResult story={story.parsed} />}
-        </section>
+      <section
+        id="print-area"
+        className="mt-6 w-full"
+        aria-label="Generated story"
+      >
+        {story.loading && <StorySkeleton sessionLength={story.sessionLength} />}
+        {story.parsed && <StoryResult story={story.parsed} />}
       </section>
     </div>
   );

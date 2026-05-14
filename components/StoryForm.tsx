@@ -1,17 +1,18 @@
+import InfoTooltip from "./InfoTooltip";
 import MultiSelectWithMode from "./MultiSelectWithMode";
 import SelectWithCustomOption from "./SelectWithCustomOption";
-import InfoTooltip from "./InfoTooltip";
 import {
   CLASSES,
+  ENCOUNTER_COUNT_BY_SESSION_LENGTH,
   GENRES,
-  LENGTHS,
   LEVELS,
   PARTY_SIZES,
   RACES,
+  SESSION_LENGTHS,
   SETTINGS,
+  type SessionLength,
 } from "@/lib/data";
-
-type Mode = "all" | "custom";
+import type { SelectionMode } from "@/lib/types";
 
 type Props = {
   genre: string;
@@ -19,27 +20,35 @@ type Props = {
   customGenre: string;
   setCustomGenre: (value: string) => void;
   genreError: string;
-  clearGenreError: () => void;
+  touchGenreField: () => void;
+  resetGenreValidation: () => void;
 
   setting: string;
   setSetting: (value: string) => void;
   customSetting: string;
   setCustomSetting: (value: string) => void;
   settingError: string;
-  clearSettingError: () => void;
+  touchSettingField: () => void;
+  resetSettingValidation: () => void;
 
-  raceMode: Mode;
-  setRaceMode: (value: Mode) => void;
+  raceMode: SelectionMode;
+  setRaceMode: (value: SelectionMode) => void;
   selectedRaces: string[];
   setSelectedRaces: (value: string[]) => void;
+  raceError: string;
+  touchRaceField: () => void;
+  resetRaceValidation: () => void;
 
-  classMode: Mode;
-  setClassMode: (value: Mode) => void;
+  classMode: SelectionMode;
+  setClassMode: (value: SelectionMode) => void;
   selectedClasses: string[];
   setSelectedClasses: (value: string[]) => void;
+  classError: string;
+  touchClassField: () => void;
+  resetClassValidation: () => void;
 
-  length: string;
-  setLength: (value: string) => void;
+  sessionLength: SessionLength;
+  setSessionLength: (value: SessionLength) => void;
 
   partySize: string;
   setPartySize: (value: string) => void;
@@ -60,27 +69,35 @@ export default function StoryForm({
   customGenre,
   setCustomGenre,
   genreError,
-  clearGenreError,
+  touchGenreField,
+  resetGenreValidation,
 
   setting,
   setSetting,
   customSetting,
   setCustomSetting,
   settingError,
-  clearSettingError,
+  touchSettingField,
+  resetSettingValidation,
 
   raceMode,
   setRaceMode,
   selectedRaces,
   setSelectedRaces,
+  raceError,
+  touchRaceField,
+  resetRaceValidation,
 
   classMode,
   setClassMode,
   selectedClasses,
   setSelectedClasses,
+  classError,
+  touchClassField,
+  resetClassValidation,
 
-  length,
-  setLength,
+  sessionLength,
+  setSessionLength,
 
   partySize,
   setPartySize,
@@ -94,6 +111,7 @@ export default function StoryForm({
   return (
     <aside className="space-y-4">
       <SelectWithCustomOption
+        id="genre-field"
         label="Genre"
         options={GENRES}
         value={genre}
@@ -101,10 +119,12 @@ export default function StoryForm({
         customValue={customGenre}
         setCustomValue={setCustomGenre}
         error={genreError}
-        clearError={clearGenreError}
+        onTouch={touchGenreField}
+        resetValidation={resetGenreValidation}
       />
 
       <SelectWithCustomOption
+        id="setting-field"
         label="Setting"
         options={SETTINGS}
         value={setting}
@@ -112,10 +132,12 @@ export default function StoryForm({
         customValue={customSetting}
         setCustomValue={setCustomSetting}
         error={settingError}
-        clearError={clearSettingError}
+        onTouch={touchSettingField}
+        resetValidation={resetSettingValidation}
       />
 
       <MultiSelectWithMode
+        id="races-field"
         label="Allowed Races"
         options={RACES}
         mode={raceMode}
@@ -123,9 +145,13 @@ export default function StoryForm({
         selected={selectedRaces}
         setSelected={setSelectedRaces}
         allDescription="Use all core D&D 5e races from the 2014 Player’s Handbook."
+        error={raceError}
+        onTouch={touchRaceField}
+        resetValidation={resetRaceValidation}
       />
 
       <MultiSelectWithMode
+        id="classes-field"
         label="Allowed Classes"
         options={CLASSES}
         mode={classMode}
@@ -133,26 +159,28 @@ export default function StoryForm({
         selected={selectedClasses}
         setSelected={setSelectedClasses}
         allDescription="Use all classic D&D 5e classes from the 2014 Player’s Handbook."
+        error={classError}
+        onTouch={touchClassField}
+        resetValidation={resetClassValidation}
       />
 
       <div>
         <div>
           <label className="font-semibold">Session Length</label>
           <InfoTooltip
-            text={`
-Short: 2 encounters
-Medium: 3 encounters
-Long: 5 encounters
-`}
+            text={SESSION_LENGTHS.map(
+              (length) =>
+                `${length}: ${ENCOUNTER_COUNT_BY_SESSION_LENGTH[length]} encounters`,
+            ).join("\n")}
           />
         </div>
 
         <select
-          value={length}
-          onChange={(e) => setLength(e.target.value)}
+          value={sessionLength}
+          onChange={(e) => setSessionLength(e.target.value as SessionLength)}
           className={selectClassName}
         >
-          {LENGTHS.map((l) => (
+          {SESSION_LENGTHS.map((l) => (
             <option key={l} value={l}>
               {l}
             </option>
@@ -195,7 +223,7 @@ Long: 5 encounters
       </div>
 
       <button
-        className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+        className="bg-primary hover:bg-primary-hover inline-flex items-center justify-center gap-2 rounded-md px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm transition disabled:cursor-not-allowed disabled:opacity-50"
         onClick={onGenerate}
         disabled={loading}
       >

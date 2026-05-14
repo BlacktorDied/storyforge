@@ -2,32 +2,89 @@
 
 import { useEffect, useState } from "react";
 
-import { GENRES, LENGTHS, SETTINGS } from "@/lib/data";
+import {
+  GENRES,
+  SESSION_LENGTHS,
+  SETTINGS,
+  type SessionLength,
+} from "@/lib/data";
 import { MOCK_RESULT, USE_MOCK } from "@/lib/mockStory";
-import { parseStory, type ParsedStory } from "@/lib/parser";
+import { parseStory } from "@/lib/parser";
+import type { ParsedStory, SelectionMode } from "@/lib/types";
+import { validateCustomSelection, validateCustomText } from "@/lib/validation";
 
 export function useStoryGenerator() {
-  const [genre, setGenre] = useState(GENRES[0]);
+  // =========================================================================
+  // Form State
+  // =========================================================================
+
+  const [genre, setGenre] = useState<string>(GENRES[0]);
   const [customGenre, setCustomGenre] = useState("");
 
-  const [setting, setSetting] = useState(SETTINGS[0]);
+  const [setting, setSetting] = useState<string>(SETTINGS[0]);
   const [customSetting, setCustomSetting] = useState("");
 
-  const [raceMode, setRaceMode] = useState<"all" | "custom">("all");
+  const [sessionLength, setSessionLength] = useState<SessionLength>(
+    SESSION_LENGTHS[0],
+  );
+  const [partySize, setPartySize] = useState<string>("4");
+  const [level, setLevel] = useState<string>("1");
+
+  // =========================================================================
+  // Selection State
+  // =========================================================================
+
+  const [raceMode, setRaceMode] = useState<SelectionMode>("all");
   const [selectedRaces, setSelectedRaces] = useState<string[]>([]);
 
-  const [classMode, setClassMode] = useState<"all" | "custom">("all");
+  const [classMode, setClassMode] = useState<SelectionMode>("all");
   const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
 
-  const [length, setLength] = useState(LENGTHS[0]);
-  const [partySize, setPartySize] = useState("4");
-  const [level, setLevel] = useState("1");
+  // =========================================================================
+  // Validation State
+  // =========================================================================
 
-  const [genreError, setGenreError] = useState("");
-  const [settingError, setSettingError] = useState("");
+  const [genreTouched, setGenreTouched] = useState(false);
+  const [settingTouched, setSettingTouched] = useState(false);
+  const [raceTouched, setRaceTouched] = useState(false);
+  const [classTouched, setClassTouched] = useState(false);
+
+  const genreError =
+    genreTouched && genre === "Other"
+      ? validateCustomText(customGenre, "genre")
+      : "";
+
+  const settingError =
+    settingTouched && setting === "Other"
+      ? validateCustomText(customSetting, "setting")
+      : "";
+
+  const raceError =
+    raceTouched && raceMode === "custom"
+      ? validateCustomSelection(selectedRaces, "race")
+      : "";
+
+  const classError =
+    classTouched && classMode === "custom"
+      ? validateCustomSelection(selectedClasses, "class")
+      : "";
+
+  // =========================================================================
+  // UI State
+  // =========================================================================
 
   const [loading, setLoading] = useState(false);
+  const [copyStatus, setCopyStatus] = useState<"idle" | "copied">("idle");
+
+  // =========================================================================
+  // Generated Story State
+  // =========================================================================
+
   const [parsed, setParsed] = useState<ParsedStory | null>(null);
+
+  // =========================================================================
+  // Effects
+  // =========================================================================
 
   useEffect(() => {
     if (!parsed) return;
@@ -38,38 +95,80 @@ export function useStoryGenerator() {
     });
   }, [parsed]);
 
+  // =========================================================================
+  // Helpers
+  // =========================================================================
+
+  const validateForm = () => {
+    const genreValidationError =
+      genre === "Other" ? validateCustomText(customGenre, "genre") : "";
+
+    const settingValidationError =
+      setting === "Other" ? validateCustomText(customSetting, "setting") : "";
+
+    const raceValidationError =
+      raceMode === "custom"
+        ? validateCustomSelection(selectedRaces, "race")
+        : "";
+
+    const classValidationError =
+      classMode === "custom"
+        ? validateCustomSelection(selectedClasses, "class")
+        : "";
+
+    return !(
+      genreValidationError ||
+      settingValidationError ||
+      raceValidationError ||
+      classValidationError
+    );
+  };
+
+  const scrollToField = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  };
+
+  // =========================================================================
+  // Handlers
+  // =========================================================================
+
   const handleGenerate = async () => {
     setParsed(null);
     setLoading(true);
 
-    const finalGenre = genre === "Other" ? customGenre.trim() : genre;
+    setGenreTouched(true);
+    setSettingTouched(true);
+    setRaceTouched(true);
+    setClassTouched(true);
 
+    const finalGenre = genre === "Other" ? customGenre.trim() : genre;
     const finalSetting = setting === "Other" ? customSetting.trim() : setting;
 
-    setGenreError("");
-    setSettingError("");
-
-    if (genre === "Other" && finalGenre === "") {
-      setGenreError("Please enter a custom genre.");
+    if (!validateForm()) {
       setLoading(false);
-      return;
-    }
 
-    if (setting === "Other" && finalSetting === "") {
-      setSettingError("Please enter a custom setting.");
-      setLoading(false);
-      return;
-    }
+      if (genre === "Other" && validateCustomText(customGenre, "genre")) {
+        scrollToField("genre-field");
+      } else if (
+        setting === "Other" &&
+        validateCustomText(customSetting, "setting")
+      ) {
+        scrollToField("setting-field");
+      } else if (
+        raceMode === "custom" &&
+        validateCustomSelection(selectedRaces, "race")
+      ) {
+        scrollToField("races-field");
+      } else if (
+        classMode === "custom" &&
+        validateCustomSelection(selectedClasses, "class")
+      ) {
+        scrollToField("classes-field");
+      }
 
-    if (raceMode === "custom" && selectedRaces.length === 0) {
-      alert("Please select at least one race");
-      setLoading(false);
-      return;
-    }
-
-    if (classMode === "custom" && selectedClasses.length === 0) {
-      alert("Please select at least one class");
-      setLoading(false);
       return;
     }
 
@@ -94,14 +193,13 @@ export function useStoryGenerator() {
         setting: finalSetting,
         races: raceMode === "all" ? null : selectedRaces,
         classes: classMode === "all" ? null : selectedClasses,
-        length,
+        sessionLength,
         partySize,
         level,
       }),
     });
 
     const data = await res.json();
-
     const parsedData = parseStory(data.result);
 
     setParsed(parsedData);
@@ -115,47 +213,73 @@ export function useStoryGenerator() {
 
     try {
       await navigator.clipboard.writeText(element.innerText);
-      alert("Copied to clipboard!");
+
+      setCopyStatus("copied");
+
+      window.setTimeout(() => {
+        setCopyStatus("idle");
+      }, 2000);
     } catch (err) {
       console.error("Copy failed", err);
     }
   };
 
+  // =========================================================================
+  // Public API
+  // =========================================================================
+
   return {
     parsed,
     loading,
-    length,
+    sessionLength,
 
     handleGenerate,
     handleCopy,
+    copyStatus,
 
     formProps: {
       genre,
       setGenre,
-
       customGenre,
       setCustomGenre,
+      genreError,
+      touchGenreField: () => setGenreTouched(true),
+      resetGenreValidation: () => {
+        setGenreTouched(false);
+      },
 
       setting,
       setSetting,
-
       customSetting,
       setCustomSetting,
+      settingError,
+      touchSettingField: () => setSettingTouched(true),
+      resetSettingValidation: () => {
+        setSettingTouched(false);
+      },
 
       raceMode,
       setRaceMode,
-
       selectedRaces,
       setSelectedRaces,
+      raceError,
+      touchRaceField: () => setRaceTouched(true),
+      resetRaceValidation: () => {
+        setRaceTouched(false);
+      },
 
       classMode,
       setClassMode,
-
       selectedClasses,
       setSelectedClasses,
+      classError,
+      touchClassField: () => setClassTouched(true),
+      resetClassValidation: () => {
+        setClassTouched(false);
+      },
 
-      length,
-      setLength,
+      sessionLength,
+      setSessionLength,
 
       partySize,
       setPartySize,
@@ -163,14 +287,7 @@ export function useStoryGenerator() {
       level,
       setLevel,
 
-      genreError,
-      clearGenreError: () => setGenreError(""),
-
-      settingError,
-      clearSettingError: () => setSettingError(""),
-
       loading,
-
       onGenerate: handleGenerate,
     },
   };
