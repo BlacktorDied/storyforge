@@ -1,19 +1,21 @@
 import InfoTooltip from "./InfoTooltip";
 
 type Props = {
+  id?: string;
   label: string;
-  options: string[];
+  options: readonly string[];
   value: string;
   setValue: (v: string) => void;
   customValue: string;
   setCustomValue: (v: string) => void;
   info?: string;
+  error?: string;
+  onTouch?: () => void;
+  resetValidation?: () => void;
 };
 
-const fieldClassName =
-  "mt-1 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20";
-
 export default function SelectWithCustomOption({
+  id,
   label,
   options,
   value,
@@ -21,9 +23,12 @@ export default function SelectWithCustomOption({
   customValue,
   setCustomValue,
   info,
+  error,
+  onTouch,
+  resetValidation,
 }: Props) {
   return (
-    <div>
+    <div id={id}>
       <div>
         <label className="font-semibold">{label}</label>
         {info && <InfoTooltip text={info} />}
@@ -31,8 +36,13 @@ export default function SelectWithCustomOption({
 
       <select
         value={value}
-        onChange={(e) => setValue(e.target.value)}
-        className={fieldClassName}
+        onChange={(e) => {
+          const nextValue = e.target.value;
+
+          setValue(nextValue);
+          resetValidation?.();
+        }}
+        className="border-border bg-surface text-text focus:border-primary focus:ring-primary/20 mt-1 w-full rounded-md border px-3 py-2 text-sm shadow-sm transition outline-none focus:ring-2"
       >
         {options.map((o) => (
           <option key={o} value={o}>
@@ -45,9 +55,21 @@ export default function SelectWithCustomOption({
         <input
           placeholder={`Custom ${label.toLowerCase()}`}
           value={customValue}
-          onChange={(e) => setCustomValue(e.target.value)}
-          className={fieldClassName}
+          aria-invalid={Boolean(error)}
+          onBlur={onTouch}
+          onChange={(e) => {
+            onTouch?.();
+            setCustomValue(e.target.value);
+          }}
+          className={`bg-surface text-text mt-2 w-full rounded-md border px-3 py-2 text-sm shadow-sm transition outline-none ${
+            error
+              ? "border-error focus:border-error"
+              : "border-border focus:border-primary"
+          }`}
         />
+      )}
+      {error && (
+        <small className="text-error mt-1 block text-sm">{error}</small>
       )}
     </div>
   );

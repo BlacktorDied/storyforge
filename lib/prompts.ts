@@ -1,17 +1,16 @@
-import { CLASSES, RACES } from "./data";
-
-const ENCOUNTER_COUNT_BY_LENGTH = {
-  Short: 2,
-  Medium: 3,
-  Long: 5,
-} as const;
+import {
+  CLASSES,
+  ENCOUNTER_COUNT_BY_SESSION_LENGTH,
+  RACES,
+  type SessionLength,
+} from "./data";
 
 type BuildStoryPromptParams = {
   genre: string;
   setting: string;
-  races: string[] | null;
-  classes: string[] | null;
-  length: string;
+  races: readonly string[] | null;
+  classes: readonly string[] | null;
+  sessionLength: SessionLength;
   partySize: string;
   level: string;
 };
@@ -21,26 +20,22 @@ export function buildStoryPrompt({
   setting,
   races,
   classes,
-  length,
+  sessionLength,
   partySize,
   level,
 }: BuildStoryPromptParams) {
   const usedRaces = races === null ? RACES : races;
   const usedClasses = classes === null ? CLASSES : classes;
 
-  const encounterCount =
-    ENCOUNTER_COUNT_BY_LENGTH[
-      length as keyof typeof ENCOUNTER_COUNT_BY_LENGTH
-    ] ?? 3;
+  const encounterCount = ENCOUNTER_COUNT_BY_SESSION_LENGTH[sessionLength];
 
   return `
-You are a professional Dungeon Master creating a ONE-SHOT adventure for Dungeons & Dragons 5e.
-
+Create a structured one-shot adventure using these parameters:
 Genre: ${genre}
 Setting: ${setting}
 Party size: ${partySize} players
 Recommended player level: ${level}
-Session length: ${length}
+Session length: ${sessionLength}
 
 Constraints:
 - Allowed races: ${usedRaces.join(", ")}
@@ -85,14 +80,14 @@ You MUST generate exactly ${encounterCount} encounters.
 Each encounter MUST:
 - Use format: ### Encounter Name
 - Include a short description
-- Include enemies or challenge details
+- Include at least one playable element: combat, obstacle, puzzle, roleplay challenge, exploration challenge, or environmental hazard
 - Be appropriate for party size (${partySize}) and level (${level})
 
 IMPORTANT:
 - If an encounter includes a puzzle, riddle, or challenge, you MUST provide its full content
 
 ## NPCs
-Generate 2–4 NPCs depending on story complexity.
+Generate 2-4 NPCs depending on story complexity.
 
 Each NPC MUST follow this format:
 

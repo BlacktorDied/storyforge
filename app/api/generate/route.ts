@@ -16,23 +16,28 @@ export async function POST(req: Request) {
 
     const body = await req.json();
 
-    console.log("=== INPUT ===");
-    console.log(JSON.stringify(body, null, 2));
+    if (process.env.NODE_ENV === "development") {
+      console.log("=== INPUT ===");
+      console.log(JSON.stringify(body, null, 2));
+    }
 
-    const { genre, setting, races, classes, length, partySize, level } = body;
+    const { genre, setting, races, classes, sessionLength, partySize, level } =
+      body;
 
     const prompt = buildStoryPrompt({
       genre,
       setting,
       races,
       classes,
-      length,
+      sessionLength,
       partySize,
       level,
     });
 
-    console.log("=== PROMPT ===");
-    console.log(prompt);
+    if (process.env.NODE_ENV === "development") {
+      console.log("=== PROMPT ===");
+      console.log(prompt);
+    }
 
     const completion = await client.chat.completions.create({
       model: "gpt-4o-mini",
@@ -52,15 +57,18 @@ export async function POST(req: Request) {
 
     const result = completion.choices[0].message.content ?? "";
 
-    console.log("=== OUTPUT ===");
-    console.log(result);
+    if (process.env.NODE_ENV === "development") {
+      console.log("=== OUTPUT ===");
+      console.log(result);
+    }
 
     return Response.json({ result });
   } catch (error) {
     console.error("Generation error:", error);
 
-    return Response.json({
-      result: "Error: " + String(error),
-    });
+    return Response.json(
+      { result: "Error: " + String(error) },
+      { status: 500 },
+    );
   }
 }
