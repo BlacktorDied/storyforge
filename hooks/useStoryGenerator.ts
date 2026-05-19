@@ -199,11 +199,16 @@ export function useStoryGenerator() {
       }),
     });
 
-    const data = await res.json();
-    const parsedData = parseStory(data.result);
+    try {
+      const data = await res.json();
+      const parsedData = parseStory(data.result);
 
-    setParsed(parsedData);
-    setLoading(false);
+      setParsed(parsedData);
+    } catch {
+      alert("Failed to parse generated story.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCopy = async () => {
