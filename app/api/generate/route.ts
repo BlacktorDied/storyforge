@@ -45,7 +45,7 @@ export async function POST(req: Request) {
         {
           role: "system",
           content:
-            "You are a professional Dungeon Master creating structured Dungeons & Dragons 5e one-shot adventures. Follow the requested format exactly.",
+            "You are a professional Dungeon Master creating structured Dungeons & Dragons 5e one-shot adventures. Return ONLY valid JSON matching the requested structure.",
         },
         {
           role: "user",
