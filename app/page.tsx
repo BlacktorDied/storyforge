@@ -21,9 +21,9 @@ export default function StoryForgePage() {
 
           <button
             className="border-border bg-surface text-text hover:bg-background rounded-r-lg border px-4 py-2 text-sm font-medium shadow-sm transition"
-            onClick={() => window.print()}
+            onClick={story.handleDownloadPdf}
           >
-            Download
+            Download PDF
           </button>
         </div>
       )}
