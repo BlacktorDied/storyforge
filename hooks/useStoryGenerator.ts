@@ -211,6 +211,12 @@ export function useStoryGenerator() {
     }
   };
 
+  const handleDownloadPdf = async () => {
+    if (!parsed) return;
+    const { exportStoryToPdf } = await import("@/lib/pdfExport");
+    exportStoryToPdf(parsed);
+  };
+
   const handleCopy = async () => {
     const element = document.getElementById("print-area");
 
@@ -240,6 +246,7 @@ export function useStoryGenerator() {
 
     handleGenerate,
     handleCopy,
+    handleDownloadPdf,
     copyStatus,
 
     formProps: {
