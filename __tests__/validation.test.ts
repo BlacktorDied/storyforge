@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  validateCustomSelection,
-  validateCustomText,
-} from "@/lib/validation";
+import { validateCustomSelection, validateCustomText } from "@/lib/validation";
 
 // ---------------------------------------------------------------------------
 // validateCustomText
@@ -72,8 +69,6 @@ describe("validateCustomSelection", () => {
   });
 
   it("returns no error when multiple items are selected", () => {
-    expect(validateCustomSelection(["Human", "Elf", "Dwarf"], "race")).toBe(
-      "",
-    );
+    expect(validateCustomSelection(["Human", "Elf", "Dwarf"], "race")).toBe("");
   });
 });
