@@ -1,7 +1,7 @@
 "use client";
 
 import StoryForm from "@/components/StoryForm";
-import StoryResult from "@/components/StoryResult";
+import StoryResult from "@/components/story/StoryResult";
 import StorySkeleton from "@/components/StorySkeleton";
 import { useStoryGenerator } from "@/hooks/useStoryGenerator";
 
@@ -36,7 +36,12 @@ export default function StoryForgePage() {
         aria-label="Generated story"
       >
         {story.loading && <StorySkeleton sessionLength={story.sessionLength} />}
-        {story.parsed && <StoryResult story={story.parsed} />}
+        {story.parsed && (
+          <StoryResult
+            story={story.parsed}
+            onStoryChange={story.onStoryChange}
+          />
+        )}
       </section>
     </div>
   );

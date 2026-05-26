@@ -248,6 +248,7 @@ export function useStoryGenerator() {
     handleCopy,
     handleDownloadPdf,
     copyStatus,
+    onStoryChange: (story: ParsedStory) => setParsed(story),
 
     formProps: {
       genre,

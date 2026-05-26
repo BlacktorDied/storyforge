@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   title: "StoryForge",
   description:
     "AI-powered TTRPG adventure generator with configurable storytelling parameters and structured narrative outputs.",
+};
+
+export const viewport: Viewport = {
   themeColor: [
     {
       media: "(prefers-color-scheme: light)",
