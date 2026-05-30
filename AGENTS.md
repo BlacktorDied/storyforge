@@ -43,7 +43,7 @@ Core files:
 - `app/api/generate/route.ts` – AI request handling
 - `lib/prompts.ts` – Prompt generation logic
 - `lib/parser.ts` – JSON parsing and validation
-- `lib/validation.ts` – Input validation
+- `lib/validation.ts` – Shared validation helpers
 - `lib/types.ts` – Shared TypeScript types
 - `hooks/useStoryGenerator.ts` – Story generation workflow/state
 - `components/` – Reusable UI components

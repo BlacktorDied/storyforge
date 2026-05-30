@@ -1,4 +1,6 @@
+import FieldError from "./FieldError";
 import InfoTooltip from "./InfoTooltip";
+import { getInputClass } from "./inputStyles";
 
 type Props = {
   id?: string;
@@ -9,7 +11,7 @@ type Props = {
   customValue: string;
   setCustomValue: (v: string) => void;
   info?: string;
-  error?: string;
+  error?: string | null;
   onTouch?: () => void;
   resetValidation?: () => void;
 };
@@ -27,6 +29,8 @@ export default function SelectWithCustomOption({
   onTouch,
   resetValidation,
 }: Props) {
+  const errorId = id ? `${id}-error` : undefined;
+
   return (
     <div id={id}>
       <div>
@@ -42,7 +46,7 @@ export default function SelectWithCustomOption({
           setValue(nextValue);
           resetValidation?.();
         }}
-        className="border-border bg-surface text-text focus:border-primary focus:ring-primary/20 mt-1 w-full rounded-md border px-3 py-2 text-sm shadow-sm transition outline-none focus:ring-2"
+        className={getInputClass()}
       >
         {options.map((o) => (
           <option key={o} value={o}>
@@ -56,21 +60,16 @@ export default function SelectWithCustomOption({
           placeholder={`Custom ${label.toLowerCase()}`}
           value={customValue}
           aria-invalid={Boolean(error)}
+          aria-describedby={error ? errorId : undefined}
           onBlur={onTouch}
           onChange={(e) => {
             onTouch?.();
             setCustomValue(e.target.value);
           }}
-          className={`bg-surface text-text mt-2 w-full rounded-md border px-3 py-2 text-sm shadow-sm transition outline-none ${
-            error
-              ? "border-error focus:border-error"
-              : "border-border focus:border-primary"
-          }`}
+          className={`${getInputClass(Boolean(error))} mt-2`}
         />
       )}
-      {error && (
-        <small className="text-error mt-1 block text-sm">{error}</small>
-      )}
+      <FieldError id={errorId} error={error} />
     </div>
   );
 }

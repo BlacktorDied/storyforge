@@ -2,16 +2,18 @@
 
 import TextareaAutosize from "react-textarea-autosize";
 
+import FieldError from "@/components/FieldError";
+import { getInputClass } from "@/components/inputStyles";
 import type { ParsedEncounter } from "@/lib/types";
 
 import DeleteButton from "./DeleteButton";
 import EditButton from "./EditButton";
 import SaveCancelBar from "./SaveCancelBar";
-import { inputClass } from "./EditableTextSection";
 
 type EncounterCardProps = {
   encounter: ParsedEncounter;
   draftEncounter?: ParsedEncounter;
+  errors?: Partial<Record<keyof ParsedEncounter, string>>;
   isEditing: boolean;
   onStartEdit: () => void;
   onChange: (field: keyof ParsedEncounter, value: string) => void;
@@ -23,6 +25,7 @@ type EncounterCardProps = {
 export default function EncounterCard({
   encounter,
   draftEncounter,
+  errors = {},
   isEditing,
   onStartEdit,
   onChange,
@@ -38,15 +41,19 @@ export default function EncounterCard({
             type="text"
             value={draftEncounter?.title ?? encounter.title}
             onChange={(event) => onChange("title", event.target.value)}
-            className={`${inputClass} font-semibold`}
+            className={`${getInputClass(Boolean(errors.title))} font-semibold`}
             placeholder="Encounter title"
+            aria-invalid={Boolean(errors.title)}
           />
+          <FieldError error={errors.title} />
           <TextareaAutosize
             value={draftEncounter?.content ?? encounter.content}
             onChange={(event) => onChange("content", event.target.value)}
-            className={`${inputClass} resize-none`}
+            className={`${getInputClass(Boolean(errors.content))} resize-none`}
             placeholder="Encounter description"
+            aria-invalid={Boolean(errors.content)}
           />
+          <FieldError error={errors.content} />
           <SaveCancelBar onSave={onSave} onCancel={onCancel} />
         </div>
       ) : (

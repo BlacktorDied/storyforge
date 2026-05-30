@@ -2,6 +2,9 @@
 
 import TextareaAutosize from "react-textarea-autosize";
 
+import FieldError from "@/components/FieldError";
+import { getInputClass } from "@/components/inputStyles";
+
 import EditButton from "./EditButton";
 import SaveCancelBar from "./SaveCancelBar";
 
@@ -17,10 +20,8 @@ type EditableTextSectionProps = {
   mode?: "input" | "textarea";
   minRows?: number;
   isTitle?: boolean;
+  error?: string | null;
 };
-
-export const inputClass =
-  "w-full rounded border border-border bg-surface px-2 py-1 text-text focus:outline-none focus:ring-1 focus:ring-primary";
 
 export default function EditableTextSection({
   label,
@@ -34,6 +35,7 @@ export default function EditableTextSection({
   mode = "textarea",
   minRows = 1,
   isTitle = false,
+  error,
 }: EditableTextSectionProps) {
   if (isTitle) {
     return (
@@ -44,9 +46,11 @@ export default function EditableTextSection({
               type="text"
               value={draftValue}
               onChange={(event) => onChange(event.target.value)}
-              className={`${inputClass} text-xl font-bold`}
+              className={`${getInputClass(Boolean(error))} text-xl font-bold`}
               aria-label={label}
+              aria-invalid={Boolean(error)}
             />
+            <FieldError error={error} />
             <SaveCancelBar onSave={onSave} onCancel={onCancel} />
           </div>
         ) : (
@@ -72,18 +76,21 @@ export default function EditableTextSection({
               type="text"
               value={draftValue}
               onChange={(event) => onChange(event.target.value)}
-              className={inputClass}
+              className={getInputClass(Boolean(error))}
               aria-label={label}
+              aria-invalid={Boolean(error)}
             />
           ) : (
             <TextareaAutosize
               value={draftValue}
               minRows={minRows}
               onChange={(event) => onChange(event.target.value)}
-              className={`${inputClass} resize-none`}
+              className={`${getInputClass(Boolean(error))} resize-none`}
               aria-label={label}
+              aria-invalid={Boolean(error)}
             />
           )}
+          <FieldError error={error} />
           <SaveCancelBar onSave={onSave} onCancel={onCancel} />
         </>
       ) : (

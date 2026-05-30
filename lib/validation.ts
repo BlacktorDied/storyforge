@@ -1,34 +1,37 @@
-const MAX_CUSTOM_FIELD_LENGTH = 40;
-
-function capitalize(value: string) {
-  return value.charAt(0).toUpperCase() + value.slice(1);
+function hasLetter(value: string) {
+  return /\p{L}/u.test(value);
 }
 
-export function validateCustomText(value: string, fieldLabel: string) {
+export function validateTextValue(
+  value: string,
+  label: string,
+  maxLength: number,
+  requiredMessage?: string,
+): string | null {
   const trimmed = value.trim();
 
   if (!trimmed) {
-    return `Please enter a custom ${fieldLabel}.`;
+    return requiredMessage ?? `${label} is required.`;
   }
 
-  if (trimmed.length > MAX_CUSTOM_FIELD_LENGTH) {
-    return `${capitalize(fieldLabel)} must be ${MAX_CUSTOM_FIELD_LENGTH} characters or less.`;
+  if (!hasLetter(trimmed)) {
+    return `${label} must contain at least one letter.`;
   }
 
-  if (!/[a-zA-Zа-яА-Я]/.test(trimmed)) {
-    return `${capitalize(fieldLabel)} must contain at least one letter.`;
+  if (trimmed.length > maxLength) {
+    return `${label} must be ${maxLength} characters or less.`;
   }
 
-  return "";
+  return null;
 }
 
-export function validateCustomSelection(
+export function validateSelectionValue(
   selected: string[],
-  fieldLabel: string,
-) {
+  label: string,
+): string | null {
   if (selected.length === 0) {
-    return `Please select at least one ${fieldLabel}.`;
+    return `Please select at least one ${label}.`;
   }
 
-  return "";
+  return null;
 }

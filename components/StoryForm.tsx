@@ -1,4 +1,5 @@
 import InfoTooltip from "./InfoTooltip";
+import { getInputClass } from "./inputStyles";
 import MultiSelectWithMode from "./MultiSelectWithMode";
 import SelectWithCustomOption from "./SelectWithCustomOption";
 import {
@@ -19,7 +20,7 @@ type Props = {
   setGenre: (value: string) => void;
   customGenre: string;
   setCustomGenre: (value: string) => void;
-  genreError: string;
+  genreError: string | null;
   touchGenreField: () => void;
   resetGenreValidation: () => void;
 
@@ -27,7 +28,7 @@ type Props = {
   setSetting: (value: string) => void;
   customSetting: string;
   setCustomSetting: (value: string) => void;
-  settingError: string;
+  settingError: string | null;
   touchSettingField: () => void;
   resetSettingValidation: () => void;
 
@@ -35,7 +36,7 @@ type Props = {
   setRaceMode: (value: SelectionMode) => void;
   selectedRaces: string[];
   setSelectedRaces: (value: string[]) => void;
-  raceError: string;
+  raceError: string | null;
   touchRaceField: () => void;
   resetRaceValidation: () => void;
 
@@ -43,7 +44,7 @@ type Props = {
   setClassMode: (value: SelectionMode) => void;
   selectedClasses: string[];
   setSelectedClasses: (value: string[]) => void;
-  classError: string;
+  classError: string | null;
   touchClassField: () => void;
   resetClassValidation: () => void;
 
@@ -59,9 +60,6 @@ type Props = {
   loading: boolean;
   onGenerate: () => void;
 };
-
-const selectClassName =
-  "mt-1 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20";
 
 export default function StoryForm({
   genre,
@@ -178,7 +176,7 @@ export default function StoryForm({
         <select
           value={sessionLength}
           onChange={(e) => setSessionLength(e.target.value as SessionLength)}
-          className={selectClassName}
+          className={getInputClass()}
         >
           {SESSION_LENGTHS.map((l) => (
             <option key={l} value={l}>
@@ -193,7 +191,7 @@ export default function StoryForm({
         <select
           value={partySize}
           onChange={(e) => setPartySize(e.target.value)}
-          className={selectClassName}
+          className={getInputClass()}
         >
           {PARTY_SIZES.map((p) => (
             <option key={p} value={p}>
@@ -212,7 +210,7 @@ export default function StoryForm({
         <select
           value={level}
           onChange={(e) => setLevel(e.target.value)}
-          className={selectClassName}
+          className={getInputClass()}
         >
           {LEVELS.map((lvl) => (
             <option key={lvl} value={lvl}>
