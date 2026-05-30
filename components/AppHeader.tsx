@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
+import { getInputClass } from "./inputStyles";
 import StoryForgeIcon from "./icons/StoryForgeIcon";
 
 type ThemeMode = "system" | "light" | "dark";
@@ -48,7 +50,7 @@ export default function AppHeader() {
           <select
             value={themeMode}
             onChange={(e) => setThemeMode(e.target.value as ThemeMode)}
-            className="border-border bg-background text-text focus:border-primary focus:ring-primary/20 mt-1 w-full rounded-md border px-3 py-2 text-sm shadow-sm transition outline-none focus:ring-2"
+            className={getInputClass()}
           >
             <option value="system">Match system</option>
             <option value="light">Light</option>

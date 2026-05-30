@@ -57,8 +57,32 @@ export function parseStory(response: string): ParsedStory {
       throw new Error("Invalid story structure");
     }
 
-    return parsed;
+    return trimStory(parsed);
   } catch {
     throw new Error("Failed to parse AI response");
   }
+}
+
+function trimStory(story: ParsedStory): ParsedStory {
+  return {
+    ...story,
+    title: story.title.trim(),
+    setting: story.setting.trim(),
+    background: story.background.trim(),
+    adventureHook: story.adventureHook.trim(),
+    mainQuest: story.mainQuest.trim(),
+    encounters: story.encounters.map((encounter) => ({
+      title: encounter.title.trim(),
+      content: encounter.content.trim(),
+    })),
+    npcs: story.npcs.map((npc) => ({
+      name: npc.name.trim(),
+      race: npc.race.trim(),
+      class: npc.class.trim(),
+      role: npc.role.trim(),
+      location: npc.location.trim(),
+      motivation: npc.motivation.trim(),
+      description: npc.description.trim(),
+    })),
+  };
 }

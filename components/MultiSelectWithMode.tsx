@@ -1,3 +1,5 @@
+import FieldError from "./FieldError";
+
 import type { SelectionMode } from "@/lib/types";
 
 type Props = {
@@ -10,7 +12,7 @@ type Props = {
   setSelected: (values: string[]) => void;
   allDescription: string;
   customDescription?: string;
-  error?: string;
+  error?: string | null;
   onTouch?: () => void;
   resetValidation?: () => void;
 };
@@ -29,6 +31,8 @@ export default function MultiSelectWithMode({
   onTouch,
   resetValidation,
 }: Props) {
+  const errorId = id ? `${id}-error` : undefined;
+
   const getOptionCardClass = (active: boolean, hasError = false) =>
     `block cursor-pointer rounded border p-3 transition ${
       hasError
@@ -64,6 +68,7 @@ export default function MultiSelectWithMode({
           <input
             type="radio"
             checked={mode === "custom"}
+            aria-describedby={error ? errorId : undefined}
             onChange={() => {
               setMode("custom");
               resetValidation?.();
@@ -76,7 +81,11 @@ export default function MultiSelectWithMode({
       </div>
 
       {mode === "custom" && (
-        <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2">
+        <div
+          role="group"
+          aria-describedby={error ? errorId : undefined}
+          className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2"
+        >
           {options.map((option) => (
             <label key={option} className="flex items-center gap-2 text-sm">
               <input
@@ -99,9 +108,7 @@ export default function MultiSelectWithMode({
         </div>
       )}
 
-      {error && (
-        <small className="text-error mt-2 block text-sm">{error}</small>
-      )}
+      <FieldError id={errorId} error={error} />
     </div>
   );
 }

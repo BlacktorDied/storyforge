@@ -11,7 +11,7 @@ import {
 import { MOCK_RESULT, USE_MOCK } from "@/lib/mockStory";
 import { parseStory } from "@/lib/parser";
 import type { ParsedStory, SelectionMode } from "@/lib/types";
-import { validateCustomSelection, validateCustomText } from "@/lib/validation";
+import { validateSelectionValue, validateTextValue } from "@/lib/validation";
 
 export function useStoryGenerator() {
   // =========================================================================
@@ -51,23 +51,33 @@ export function useStoryGenerator() {
 
   const genreError =
     genreTouched && genre === "Other"
-      ? validateCustomText(customGenre, "genre")
-      : "";
+      ? validateTextValue(
+          customGenre,
+          "genre",
+          40,
+          "Please enter a custom genre.",
+        )
+      : null;
 
   const settingError =
     settingTouched && setting === "Other"
-      ? validateCustomText(customSetting, "setting")
-      : "";
+      ? validateTextValue(
+          customSetting,
+          "setting",
+          40,
+          "Please enter a custom setting.",
+        )
+      : null;
 
   const raceError =
     raceTouched && raceMode === "custom"
-      ? validateCustomSelection(selectedRaces, "race")
-      : "";
+      ? validateSelectionValue(selectedRaces, "race")
+      : null;
 
   const classError =
     classTouched && classMode === "custom"
-      ? validateCustomSelection(selectedClasses, "class")
-      : "";
+      ? validateSelectionValue(selectedClasses, "class")
+      : null;
 
   // =========================================================================
   // UI State
@@ -101,20 +111,34 @@ export function useStoryGenerator() {
 
   const validateForm = () => {
     const genreValidationError =
-      genre === "Other" ? validateCustomText(customGenre, "genre") : "";
+      genre === "Other"
+        ? validateTextValue(
+            customGenre,
+            "genre",
+            40,
+            "Please enter a custom genre.",
+          )
+        : null;
 
     const settingValidationError =
-      setting === "Other" ? validateCustomText(customSetting, "setting") : "";
+      setting === "Other"
+        ? validateTextValue(
+            customSetting,
+            "setting",
+            40,
+            "Please enter a custom setting.",
+          )
+        : null;
 
     const raceValidationError =
       raceMode === "custom"
-        ? validateCustomSelection(selectedRaces, "race")
-        : "";
+        ? validateSelectionValue(selectedRaces, "race")
+        : null;
 
     const classValidationError =
       classMode === "custom"
-        ? validateCustomSelection(selectedClasses, "class")
-        : "";
+        ? validateSelectionValue(selectedClasses, "class")
+        : null;
 
     return !(
       genreValidationError ||
@@ -150,21 +174,34 @@ export function useStoryGenerator() {
     if (!validateForm()) {
       setLoading(false);
 
-      if (genre === "Other" && validateCustomText(customGenre, "genre")) {
+      if (
+        genre === "Other" &&
+        validateTextValue(
+          customGenre,
+          "genre",
+          40,
+          "Please enter a custom genre.",
+        )
+      ) {
         scrollToField("genre-field");
       } else if (
         setting === "Other" &&
-        validateCustomText(customSetting, "setting")
+        validateTextValue(
+          customSetting,
+          "setting",
+          40,
+          "Please enter a custom setting.",
+        )
       ) {
         scrollToField("setting-field");
       } else if (
         raceMode === "custom" &&
-        validateCustomSelection(selectedRaces, "race")
+        validateSelectionValue(selectedRaces, "race")
       ) {
         scrollToField("races-field");
       } else if (
         classMode === "custom" &&
-        validateCustomSelection(selectedClasses, "class")
+        validateSelectionValue(selectedClasses, "class")
       ) {
         scrollToField("classes-field");
       }
@@ -248,6 +285,7 @@ export function useStoryGenerator() {
     handleCopy,
     handleDownloadPdf,
     copyStatus,
+    onStoryChange: (story: ParsedStory) => setParsed(story),
 
     formProps: {
       genre,
