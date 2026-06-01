@@ -13,12 +13,15 @@
     "typecheck": "tsc --noEmit",
     "check": "npm run format:check && npm run lint && npm run typecheck",
     "check:all": "npm run format:check && npm run lint && npm run typecheck && npm run build",
-    "fix": "npm run format:fix && npm run lint:fix"
+    "fix": "npm run format:fix && npm run lint:fix",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "jspdf": "^4.2.1",
     "lucide-react": "^1.16.0",
-    "next": "16.2.4",
+    "next": "^16.2.7",
     "openai": "^6.35.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
@@ -30,11 +33,13 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitest/coverage-v8": "^4.1.7",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
     "prettier": "^3.8.3",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.7"
   }
 }

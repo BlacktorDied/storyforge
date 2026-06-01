@@ -98,7 +98,7 @@ components/ui/       Generic UI primitives and form controls
 components/story/    Generated-story display and editing UI
 hooks/               Client-side state and workflow hooks
 lib/                 Shared domain logic, types, prompts, validation, parsing
-tests/               Automated tests for domain logic and UI workflows
+__tests__/           Automated tests for domain logic and UI workflows
 public/              Browser-served static assets
 assets/              Source branding and design assets
 docs/                Project documentation
@@ -120,6 +120,7 @@ StoryForge follows five lightweight architecture principles:
 - [Documentation Index](./docs/README.md)
 - [Application Structure](./docs/application-structure.md)
 - [Glossary](./docs/glossary.md)
+- [Testing Guidelines](./docs/testing.md)
 - [Versioning](./docs/versioning.md)
 
 ## Development Notes
