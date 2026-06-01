@@ -10,9 +10,7 @@ Describe what changed and why.
 
 ## Testing
 
-- [ ] `npm run format:check`
-- [ ] `npm run lint`
-- [ ] `npm run build`
+- [ ] `npm run check:all`
 - [ ] Manual testing completed
 - [ ] Added SVG assets were optimized (if applicable)
 

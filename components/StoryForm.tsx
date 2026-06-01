@@ -1,7 +1,10 @@
-import InfoTooltip from "./InfoTooltip";
-import { getInputClass } from "./inputStyles";
-import MultiSelectWithMode from "./MultiSelectWithMode";
-import SelectWithCustomOption from "./SelectWithCustomOption";
+import { LoaderCircle } from "lucide-react";
+
+import Button from "./ui/Button";
+import InfoTooltip from "./ui/InfoTooltip";
+import MultiSelectWithMode from "./ui/MultiSelectWithMode";
+import SelectField from "./ui/SelectField";
+import SelectWithCustomOption from "./ui/SelectWithCustomOption";
 import {
   CLASSES,
   ENCOUNTER_COUNT_BY_SESSION_LENGTH,
@@ -17,45 +20,45 @@ import type { SelectionMode } from "@/lib/types";
 
 type Props = {
   genre: string;
-  setGenre: (value: string) => void;
+  onGenreChange: (value: string) => void;
   customGenre: string;
-  setCustomGenre: (value: string) => void;
+  onCustomGenreChange: (value: string) => void;
   genreError: string | null;
-  touchGenreField: () => void;
-  resetGenreValidation: () => void;
+  onGenreTouch: () => void;
+  onGenreValidationReset: () => void;
 
   setting: string;
-  setSetting: (value: string) => void;
+  onSettingChange: (value: string) => void;
   customSetting: string;
-  setCustomSetting: (value: string) => void;
+  onCustomSettingChange: (value: string) => void;
   settingError: string | null;
-  touchSettingField: () => void;
-  resetSettingValidation: () => void;
+  onSettingTouch: () => void;
+  onSettingValidationReset: () => void;
 
   raceMode: SelectionMode;
-  setRaceMode: (value: SelectionMode) => void;
+  onRaceModeChange: (value: SelectionMode) => void;
   selectedRaces: string[];
-  setSelectedRaces: (value: string[]) => void;
+  onSelectedRacesChange: (value: string[]) => void;
   raceError: string | null;
-  touchRaceField: () => void;
-  resetRaceValidation: () => void;
+  onRaceTouch: () => void;
+  onRaceValidationReset: () => void;
 
   classMode: SelectionMode;
-  setClassMode: (value: SelectionMode) => void;
+  onClassModeChange: (value: SelectionMode) => void;
   selectedClasses: string[];
-  setSelectedClasses: (value: string[]) => void;
+  onSelectedClassesChange: (value: string[]) => void;
   classError: string | null;
-  touchClassField: () => void;
-  resetClassValidation: () => void;
+  onClassTouch: () => void;
+  onClassValidationReset: () => void;
 
   sessionLength: SessionLength;
-  setSessionLength: (value: SessionLength) => void;
+  onSessionLengthChange: (value: SessionLength) => void;
 
   partySize: string;
-  setPartySize: (value: string) => void;
+  onPartySizeChange: (value: string) => void;
 
   level: string;
-  setLevel: (value: string) => void;
+  onLevelChange: (value: string) => void;
 
   loading: boolean;
   onGenerate: () => void;
@@ -63,45 +66,45 @@ type Props = {
 
 export default function StoryForm({
   genre,
-  setGenre,
+  onGenreChange,
   customGenre,
-  setCustomGenre,
+  onCustomGenreChange,
   genreError,
-  touchGenreField,
-  resetGenreValidation,
+  onGenreTouch,
+  onGenreValidationReset,
 
   setting,
-  setSetting,
+  onSettingChange,
   customSetting,
-  setCustomSetting,
+  onCustomSettingChange,
   settingError,
-  touchSettingField,
-  resetSettingValidation,
+  onSettingTouch,
+  onSettingValidationReset,
 
   raceMode,
-  setRaceMode,
+  onRaceModeChange,
   selectedRaces,
-  setSelectedRaces,
+  onSelectedRacesChange,
   raceError,
-  touchRaceField,
-  resetRaceValidation,
+  onRaceTouch,
+  onRaceValidationReset,
 
   classMode,
-  setClassMode,
+  onClassModeChange,
   selectedClasses,
-  setSelectedClasses,
+  onSelectedClassesChange,
   classError,
-  touchClassField,
-  resetClassValidation,
+  onClassTouch,
+  onClassValidationReset,
 
   sessionLength,
-  setSessionLength,
+  onSessionLengthChange,
 
   partySize,
-  setPartySize,
+  onPartySizeChange,
 
   level,
-  setLevel,
+  onLevelChange,
 
   loading,
   onGenerate,
@@ -113,12 +116,12 @@ export default function StoryForm({
         label="Genre"
         options={GENRES}
         value={genre}
-        setValue={setGenre}
+        onValueChange={onGenreChange}
         customValue={customGenre}
-        setCustomValue={setCustomGenre}
+        onCustomValueChange={onCustomGenreChange}
         error={genreError}
-        onTouch={touchGenreField}
-        resetValidation={resetGenreValidation}
+        onTouch={onGenreTouch}
+        onValidationReset={onGenreValidationReset}
       />
 
       <SelectWithCustomOption
@@ -126,12 +129,12 @@ export default function StoryForm({
         label="Setting"
         options={SETTINGS}
         value={setting}
-        setValue={setSetting}
+        onValueChange={onSettingChange}
         customValue={customSetting}
-        setCustomValue={setCustomSetting}
+        onCustomValueChange={onCustomSettingChange}
         error={settingError}
-        onTouch={touchSettingField}
-        resetValidation={resetSettingValidation}
+        onTouch={onSettingTouch}
+        onValidationReset={onSettingValidationReset}
       />
 
       <MultiSelectWithMode
@@ -139,13 +142,13 @@ export default function StoryForm({
         label="Allowed Races"
         options={RACES}
         mode={raceMode}
-        setMode={setRaceMode}
-        selected={selectedRaces}
-        setSelected={setSelectedRaces}
+        onModeChange={onRaceModeChange}
+        selectedOptions={selectedRaces}
+        onSelectedOptionsChange={onSelectedRacesChange}
         allDescription="Use all core D&D 5e races from the 2014 Player’s Handbook."
         error={raceError}
-        onTouch={touchRaceField}
-        resetValidation={resetRaceValidation}
+        onTouch={onRaceTouch}
+        onValidationReset={onRaceValidationReset}
       />
 
       <MultiSelectWithMode
@@ -153,13 +156,13 @@ export default function StoryForm({
         label="Allowed Classes"
         options={CLASSES}
         mode={classMode}
-        setMode={setClassMode}
-        selected={selectedClasses}
-        setSelected={setSelectedClasses}
+        onModeChange={onClassModeChange}
+        selectedOptions={selectedClasses}
+        onSelectedOptionsChange={onSelectedClassesChange}
         allDescription="Use all classic D&D 5e classes from the 2014 Player’s Handbook."
         error={classError}
-        onTouch={touchClassField}
-        resetValidation={resetClassValidation}
+        onTouch={onClassTouch}
+        onValidationReset={onClassValidationReset}
       />
 
       <div>
@@ -173,32 +176,32 @@ export default function StoryForm({
           />
         </div>
 
-        <select
+        <SelectField
           value={sessionLength}
-          onChange={(e) => setSessionLength(e.target.value as SessionLength)}
-          className={getInputClass()}
+          onChange={(e) =>
+            onSessionLengthChange(e.target.value as SessionLength)
+          }
         >
           {SESSION_LENGTHS.map((l) => (
             <option key={l} value={l}>
               {l}
             </option>
           ))}
-        </select>
+        </SelectField>
       </div>
 
       <div>
         <label className="block font-semibold">Party Size</label>
-        <select
+        <SelectField
           value={partySize}
-          onChange={(e) => setPartySize(e.target.value)}
-          className={getInputClass()}
+          onChange={(e) => onPartySizeChange(e.target.value)}
         >
           {PARTY_SIZES.map((p) => (
             <option key={p} value={p}>
               {p} players
             </option>
           ))}
-        </select>
+        </SelectField>
       </div>
 
       <div>
@@ -207,44 +210,23 @@ export default function StoryForm({
           <InfoTooltip text="Recommended level for the player character." />
         </div>
 
-        <select
+        <SelectField
           value={level}
-          onChange={(e) => setLevel(e.target.value)}
-          className={getInputClass()}
+          onChange={(e) => onLevelChange(e.target.value)}
         >
           {LEVELS.map((lvl) => (
             <option key={lvl} value={lvl}>
               Level {lvl}
             </option>
           ))}
-        </select>
+        </SelectField>
       </div>
 
-      <button
-        className="bg-primary hover:bg-primary-hover inline-flex items-center justify-center gap-2 rounded-md px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm transition disabled:cursor-not-allowed disabled:opacity-50"
-        onClick={onGenerate}
-        disabled={loading}
-      >
-        {loading && (
-          <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-            />
-          </svg>
-        )}
+      <Button onClick={onGenerate} disabled={loading}>
+        {loading && <LoaderCircle className="size-4 animate-spin" />}
 
         {loading ? "Generating..." : "Generate"}
-      </button>
+      </Button>
     </aside>
   );
 }

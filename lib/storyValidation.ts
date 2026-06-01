@@ -1,10 +1,15 @@
-import type { ParsedEncounter, ParsedNpc, ParsedStory } from "@/lib/types";
+import type { ParsedStory } from "@/lib/types";
 import { validateTextValue } from "@/lib/validation";
 import {
-  getListItemIndex,
+  encounterFields,
   isStoryTextField,
+  npcFields,
+  type EncounterField,
+  type NpcField,
   type StoryTextField,
-} from "@/lib/storyEditing";
+} from "@/lib/storyFields";
+import { getListItemIndex } from "@/lib/storyEditing";
+import { trimEncounter, trimNpc } from "@/lib/storyTransforms";
 
 export type StoryFieldErrors = Record<string, string>;
 
@@ -34,13 +39,12 @@ const storyTextRules: Record<StoryTextField, StoryValidationRule> = {
   mainQuest: { label: "Main quest", maxLength: 2500 },
 };
 
-const encounterFieldRules: Record<keyof ParsedEncounter, StoryValidationRule> =
-  {
-    title: { label: "Encounter title", maxLength: 120 },
-    content: { label: "Encounter description", maxLength: 1500 },
-  };
+const encounterFieldRules: Record<EncounterField, StoryValidationRule> = {
+  title: { label: "Encounter title", maxLength: 120 },
+  content: { label: "Encounter description", maxLength: 1500 },
+};
 
-const npcFieldRules: Record<keyof ParsedNpc, StoryValidationRule> = {
+const npcFieldRules: Record<NpcField, StoryValidationRule> = {
   name: { label: "NPC name", maxLength: 80 },
   race: { label: "NPC race", maxLength: 60 },
   class: { label: "NPC class", maxLength: 60 },
@@ -109,23 +113,15 @@ function validateEncounterEdit(
     return errors;
   }
 
-  const trimmedEncounter = {
-    title: encounter.title.trim(),
-    content: encounter.content.trim(),
-  };
-  const titleError = validateEncounterField("title", trimmedEncounter.title);
-  const contentError = validateEncounterField(
-    "content",
-    trimmedEncounter.content,
-  );
+  const trimmedEncounter = trimEncounter(encounter);
 
-  if (titleError) {
-    errors[getEncounterErrorKey(index, "title")] = titleError;
-  }
+  encounterFields.forEach((field) => {
+    const error = validateEncounterField(field, trimmedEncounter[field]);
 
-  if (contentError) {
-    errors[getEncounterErrorKey(index, "content")] = contentError;
-  }
+    if (error) {
+      errors[getEncounterErrorKey(index, field)] = error;
+    }
+  });
 
   return errors;
 }
@@ -138,53 +134,15 @@ function validateNpcEdit(index: number, draft: ParsedStory): StoryFieldErrors {
     return errors;
   }
 
-  const trimmedNpc = {
-    name: npc.name.trim(),
-    race: npc.race.trim(),
-    class: npc.class.trim(),
-    role: npc.role.trim(),
-    location: npc.location.trim(),
-    motivation: npc.motivation.trim(),
-    description: npc.description.trim(),
-  };
-  const nameError = validateNpcField("name", trimmedNpc.name);
-  const raceError = validateNpcField("race", trimmedNpc.race);
-  const classError = validateNpcField("class", trimmedNpc.class);
-  const roleError = validateNpcField("role", trimmedNpc.role);
-  const locationError = validateNpcField("location", trimmedNpc.location);
-  const motivationError = validateNpcField("motivation", trimmedNpc.motivation);
-  const descriptionError = validateNpcField(
-    "description",
-    trimmedNpc.description,
-  );
+  const trimmedNpc = trimNpc(npc);
 
-  if (nameError) {
-    errors[getNpcErrorKey(index, "name")] = nameError;
-  }
+  npcFields.forEach((field) => {
+    const error = validateNpcField(field, trimmedNpc[field]);
 
-  if (raceError) {
-    errors[getNpcErrorKey(index, "race")] = raceError;
-  }
-
-  if (classError) {
-    errors[getNpcErrorKey(index, "class")] = classError;
-  }
-
-  if (roleError) {
-    errors[getNpcErrorKey(index, "role")] = roleError;
-  }
-
-  if (locationError) {
-    errors[getNpcErrorKey(index, "location")] = locationError;
-  }
-
-  if (motivationError) {
-    errors[getNpcErrorKey(index, "motivation")] = motivationError;
-  }
-
-  if (descriptionError) {
-    errors[getNpcErrorKey(index, "description")] = descriptionError;
-  }
+    if (error) {
+      errors[getNpcErrorKey(index, field)] = error;
+    }
+  });
 
   return errors;
 }
@@ -199,28 +157,22 @@ export function validateStoryTextField(field: StoryTextField, value: string) {
   return validateTextValue(value, rule.label, rule.maxLength);
 }
 
-export function validateEncounterField(
-  field: keyof ParsedEncounter,
-  value: string,
-) {
+export function validateEncounterField(field: EncounterField, value: string) {
   const rule = encounterFieldRules[field];
 
   return validateTextValue(value, rule.label, rule.maxLength);
 }
 
-export function validateNpcField(field: keyof ParsedNpc, value: string) {
+export function validateNpcField(field: NpcField, value: string) {
   const rule = npcFieldRules[field];
 
   return validateTextValue(value, rule.label, rule.maxLength);
 }
 
-export function getEncounterErrorKey(
-  index: number,
-  field: keyof ParsedEncounter,
-) {
+export function getEncounterErrorKey(index: number, field: EncounterField) {
   return `encounters.${index}.${field}`;
 }
 
-export function getNpcErrorKey(index: number, field: keyof ParsedNpc) {
+export function getNpcErrorKey(index: number, field: NpcField) {
   return `npcs.${index}.${field}`;
 }

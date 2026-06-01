@@ -1,19 +1,20 @@
 import FieldError from "./FieldError";
 import InfoTooltip from "./InfoTooltip";
-import { getInputClass } from "./inputStyles";
+import SelectField from "./SelectField";
+import TextInput from "./TextInput";
 
 type Props = {
   id?: string;
   label: string;
   options: readonly string[];
   value: string;
-  setValue: (v: string) => void;
+  onValueChange: (value: string) => void;
   customValue: string;
-  setCustomValue: (v: string) => void;
+  onCustomValueChange: (value: string) => void;
   info?: string;
   error?: string | null;
   onTouch?: () => void;
-  resetValidation?: () => void;
+  onValidationReset?: () => void;
 };
 
 export default function SelectWithCustomOption({
@@ -21,13 +22,13 @@ export default function SelectWithCustomOption({
   label,
   options,
   value,
-  setValue,
+  onValueChange,
   customValue,
-  setCustomValue,
+  onCustomValueChange,
   info,
   error,
   onTouch,
-  resetValidation,
+  onValidationReset,
 }: Props) {
   const errorId = id ? `${id}-error` : undefined;
 
@@ -38,35 +39,35 @@ export default function SelectWithCustomOption({
         {info && <InfoTooltip text={info} />}
       </div>
 
-      <select
+      <SelectField
         value={value}
         onChange={(e) => {
           const nextValue = e.target.value;
 
-          setValue(nextValue);
-          resetValidation?.();
+          onValueChange(nextValue);
+          onValidationReset?.();
         }}
-        className={getInputClass()}
       >
         {options.map((o) => (
           <option key={o} value={o}>
             {o}
           </option>
         ))}
-      </select>
+      </SelectField>
 
       {value === "Other" && (
-        <input
+        <TextInput
           placeholder={`Custom ${label.toLowerCase()}`}
           value={customValue}
+          hasError={Boolean(error)}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? errorId : undefined}
           onBlur={onTouch}
           onChange={(e) => {
             onTouch?.();
-            setCustomValue(e.target.value);
+            onCustomValueChange(e.target.value);
           }}
-          className={`${getInputClass(Boolean(error))} mt-2`}
+          className="mt-2"
         />
       )}
       <FieldError id={errorId} error={error} />

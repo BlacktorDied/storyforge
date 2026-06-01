@@ -31,6 +31,10 @@ What happens instead?
 - Browser:
 - Branch/commit:
 
+## Version impact
+
+Usually `patch` for confirmed bugs. Use `major` or `minor` only if the fix changes expected behavior or adds a backward-compatible feature.
+
 ## Notes
 
 Screenshots, logs, or extra details.

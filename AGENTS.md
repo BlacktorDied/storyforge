@@ -2,6 +2,17 @@
 
 # StoryForge Development Rules
 
+## Table Of Contents
+
+- [Framework Notice](#framework-notice)
+- [Project Overview](#project-overview)
+- [Architecture](#architecture)
+- [Development Rules](#development-rules)
+- [Scope Rules](#scope-rules)
+- [GitHub Workflow](#github-workflow)
+- [Security Rules](#security-rules)
+- [Ignore](#ignore)
+
 ## Framework Notice
 
 This is NOT the Next.js version from model training data.
@@ -43,18 +54,24 @@ Core files:
 - `app/api/generate/route.ts` – AI request handling
 - `lib/prompts.ts` – Prompt generation logic
 - `lib/parser.ts` – JSON parsing and validation
+- `lib/storyFields.ts` – Shared story field definitions
+- `lib/storyTransforms.ts` – Story trimming and draft cloning helpers
+- `lib/storyValidation.ts` – Story editing validation rules
 - `lib/validation.ts` – Shared validation helpers
 - `lib/types.ts` – Shared TypeScript types
 - `hooks/useStoryGenerator.ts` – Story generation workflow/state
+- `hooks/useStoryEditing.ts` – Story editing workflow/state
 - `components/` – Reusable UI components
+- `components/ui/` – Generic UI primitives and form controls
+- `components/story/` – Generated story display and editing UI
 
 Architecture principles:
 
-- keep architecture simple and maintainable
-- prefer lightweight solutions over abstractions
-- preserve structured JSON response compatibility
-- avoid unnecessary dependencies
-- avoid overengineering
+- DRY: shared story rules live in `lib/`
+- KISS: plain TypeScript modules, React components and hooks
+- Do One Thing: components render, hooks coordinate workflows, `lib/` owns domain rules
+- SOLID: focused modules with typed inputs and outputs
+- Meaningful Names: files and symbols describe their role in the story flow
 
 ---
 
