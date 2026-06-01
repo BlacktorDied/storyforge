@@ -1,115 +1,250 @@
-# StoryForge Web Application Structure Guide
+# StoryForge Application Structure
 
-This guide describes the recommended structure for StoryForge as a modern
-Next.js and React application. It is not meant to turn the project into an
-enterprise codebase. The goal is a clear, industry-aligned structure that stays
-friendly for a junior frontend developer.
+## Table Of Contents
 
-StoryForge should be organized around responsibilities:
+- [Overview](#overview)
+- [Big 5 Principles](#big-5-principles)
+- [Project Structure](#project-structure)
+- [Responsibility Layers](#responsibility-layers)
+- [Story Core Structure](#story-core-structure)
+- [Naming Rules](#naming-rules)
+- [Testing Structure](#testing-structure)
+- [Placement Guide](#placement-guide)
+- [Glossary](#glossary)
+- [Related Docs](#related-docs)
 
-- Files that render pages and UI.
-- Files that hold state and workflow actions.
-- Files that define shared variables, types, and rules.
-- Files that talk to external systems, such as the AI API.
-- Files that test the behavior above.
+## Overview
 
-## Recommended Project Structure
+StoryForge follows a small responsibility-based Next.js structure. UI rendering, client workflow state, shared domain logic, automated tests, documentation, and external API handling live in separate folders with clear ownership.
+
+The structure supports the bachelor thesis scope: reliable structured story generation, maintainable parsing and validation, automated verification, and a clean editing UI without enterprise-scale architecture.
+
+## Big 5 Principles
+
+### DRY
+
+DRY means **Don't Repeat Yourself**.
+
+Shared story rules live in one source of truth. Field lists, domain types, validation helpers, parsing rules and story transforms are defined in `lib/` and imported where needed.
+
+### KISS
+
+KISS means **Keep It Simple, Stupid**.
+
+The application uses plain TypeScript modules, React components, and custom hooks. Folders and abstractions exist when they make the code easier to read and maintain.
+
+### Do One Thing
+
+Each file has one primary responsibility:
+
+- components render UI
+- hooks manage client workflows
+- parsers convert raw AI output into trusted story data
+- validators check data rules
+- transforms normalize story data
+- API routes connect the app to server-side services
+
+### SOLID Principles
+
+SOLID means **Single Responsibility**, **Open/Closed**, **Liskov Substitution**, **Interface Segregation**, and **Dependency Inversion**.
+
+StoryForge applies SOLID in a lightweight TypeScript module style:
+
+- **Single Responsibility:** each component, hook, and `lib/` module has one primary role
+- **Open/Closed:** shared story rules are centralized so story behavior can be extended through field, rule, and helper definitions
+- **Liskov Substitution:** shared types keep `ParsedStory`, `ParsedEncounter`, and `ParsedNpc` objects consistent wherever they are used
+- **Interface Segregation:** components and hooks receive focused props and helper functions instead of large all-purpose interfaces
+- **Dependency Inversion:** UI and hooks depend on typed helpers from `lib/`, while domain rules stay independent from React components
+
+### Meaningful Names
+
+Files, functions, and types use names that describe their role in the story generation flow. Examples include `ParsedStory`, `buildStoryPrompt`, `parseStory`, `validateStoryEdit`, `trimStory`, and `useStoryEditing`.
+
+## Project Structure
 
 ```txt
-app/                 Next.js routes, layouts, pages, API routes
+app/                 Next.js routes, layouts, pages, metadata, API routes
 components/          Reusable React UI components
-components/story/    Story-specific UI components
-hooks/               Reusable client-side React state/workflow logic
-lib/                 Shared application logic and single source of truth
-tests/               Automated tests
-public/              Public browser assets
-assets/              Source design/branding assets
+components/ui/       Generic UI primitives and form controls
+components/story/    Generated-story display and editing UI
+hooks/               Client-side state and workflow hooks
+lib/                 Shared domain logic, types, prompts, validation, parsing
+tests/               Automated tests for domain logic and UI workflows
+public/              Browser-served static assets
+assets/              Source branding and design assets
 docs/                Project documentation
+.github/             GitHub issue and pull request templates
 ```
-
-This structure is already close to the current project. The main missing
-folders are `docs/` and `tests/`.
-
-Use `docs/` for architecture notes, implementation decisions, and project
-guides like this one.
-
-Use `tests/` for automated tests when test coverage is added. For this project,
-a central `tests/` folder is easier to discover than placing many small test
-files beside source files.
 
 ## Responsibility Layers
 
 ### Rendering Layer
 
-Use `app/` and `components/` for rendering.
+`app/` contains Next.js route files and page-level composition.
 
-`app/` belongs to Next.js. It defines routes, layouts, pages, metadata, and API
-route files. Examples:
+Key files:
 
-- `app/layout.tsx` renders the root page shell.
-- `app/page.tsx` renders the main StoryForge page.
-- `app/api/generate/route.ts` handles the story generation API route.
+- `app/layout.tsx`: root layout and app metadata
+- `app/page.tsx`: main StoryForge page composition
+- `app/api/generate/route.ts`: story generation API route
 
-`components/` contains React UI pieces. Components should receive data through
-props and render HTML. They may have small UI-only logic, but they should not
-own shared business rules.
+`components/` contains React UI components. Components receive data and actions through props, render HTML, and keep only local display logic.
 
-Use `components/story/` for UI that only makes sense for generated stories, such
-as story results, encounters, NPC cards, and story editing sections.
+`components/ui/` contains generic UI primitives and form controls, such as buttons, inputs, selects, field errors, and tooltips.
+
+`components/story/` contains story-specific UI such as story results, editable text sections, encounter cards, NPC cards, and edit/delete controls.
 
 ### State And Workflow Layer
 
-Use `hooks/` for reusable client-side state and workflows.
+`hooks/` contains client-side workflow logic.
 
-Hooks are a good place for logic like:
+Key files:
 
-- Form state.
-- Loading state.
-- Copy/download actions.
-- Editing drafts.
-- Calling browser APIs.
-- Preparing data before sending it to an API route.
+- `hooks/useStoryGenerator.ts`: generation form state, loading state, copy action, PDF export action, and story result state
+- `hooks/useStoryEditing.ts`: story edit draft state, field updates, validation flow, save/cancel behavior, and deletion actions
 
-For example, `useStoryGenerator.ts` owns the story generation workflow, while
-`StoryForm.tsx` only renders form controls and calls the actions it receives.
+Hooks coordinate UI actions and browser APIs while keeping shared story rules in `lib/`.
 
-### Shared Rules And Data Layer
+### Shared Domain Layer
 
-Use `lib/` as the single source of truth for shared application logic.
+`lib/` contains framework-light domain logic and shared application rules.
 
-Good examples:
+Key files:
 
-- `lib/data.ts`: shared option lists and constants, such as genres, settings,
-  races, classes, levels, and session lengths.
-- `lib/types.ts`: shared TypeScript types, such as `ParsedStory`.
-- `lib/validation.ts`: reusable validation helpers.
-- `lib/parser.ts`: parsing and cleanup rules for AI-generated story JSON.
-- `lib/prompts.ts`: prompt construction rules for AI generation.
-- `lib/pdfExport.ts`: PDF export helper used by the browser.
+- `lib/types.ts`: shared TypeScript story and form types
+- `lib/data.ts`: genre, setting, race, class, level, and session-length data
+- `lib/storyFields.ts`: story, encounter, and NPC field definitions
+- `lib/storyTransforms.ts`: story cloning and string trimming helpers
+- `lib/storyValidation.ts`: story editing validation rules
+- `lib/validation.ts`: reusable validation primitives
+- `lib/parser.ts`: AI response JSON parsing and story structure checks
+- `lib/prompts.ts`: prompt construction for story generation
+- `lib/pdfExport.ts`: browser PDF export logic
 
-If a value or rule is used in more than one place, it usually belongs in `lib/`.
-If a rule defines what a valid StoryForge story is, it belongs in `lib/` even if
-only one file currently calls it.
+## Story Core Structure
 
-### AI And Domain Layer
+The story core is the shared logic around `ParsedStory`.
 
-StoryForge has domain logic around RPG story generation. Keep that logic in
-plain TypeScript files instead of hiding it inside UI components.
+`lib/types.ts` defines the story shape:
+
+- `ParsedStory`
+- `ParsedEncounter`
+- `ParsedNpc`
+
+`lib/storyFields.ts` defines the editable field names used by parsing, validation, editing, and transforms.
+
+`lib/storyTransforms.ts` normalizes story data:
+
+- `trimStory`
+- `trimEncounter`
+- `trimNpc`
+- `cloneStoryDraft`
+
+`lib/parser.ts` parses raw AI text, verifies required story structure, and returns a trimmed `ParsedStory`.
+
+`lib/storyValidation.ts` validates story edits and returns keyed field errors for the editing UI.
+
+`lib/storyEditing.ts` applies validated draft edits back onto the current story.
+
+## Naming Rules
+
+### Components
+
+React components use `PascalCase.tsx`.
 
 Examples:
 
-- Prompt text belongs in `lib/prompts.ts`.
-- Story response parsing belongs in `lib/parser.ts`.
-- Story shape definitions belong in `lib/types.ts`.
-- Allowed genre, setting, race, and class data belongs in `lib/data.ts`.
+- `StoryForm.tsx`
+- `StoryResult.tsx`
+- `EncounterCard.tsx`
 
-This keeps the UI easier to read and makes the AI behavior easier to test later.
+### Hooks
 
-### Testing Layer
+Custom hooks use the `useThing.ts` naming pattern.
 
-Use `tests/` for automated tests.
+Examples:
 
-Recommended future structure:
+- `useStoryGenerator.ts`
+- `useStoryEditing.ts`
+
+### Shared Helpers
+
+Shared helper files use `camelCase.ts`.
+
+Examples:
+
+- `validation.ts`
+- `parser.ts`
+- `storyTransforms.ts`
+
+Function names start with a verb when they perform an action:
+
+- `validateTextValue`
+- `parseStory`
+- `buildStoryPrompt`
+- `exportStoryToPdf`
+
+### Types
+
+TypeScript types use `PascalCase`.
+
+Examples:
+
+- `ParsedStory`
+- `ParsedNpc`
+- `ParsedEncounter`
+- `SelectionMode`
+
+### Constants
+
+Fixed option lists and application constants use `UPPER_SNAKE_CASE`.
+
+Examples:
+
+- `GENRES`
+- `SETTINGS`
+- `SESSION_LENGTHS`
+- `ENCOUNTER_COUNT_BY_SESSION_LENGTH`
+
+### Event And Handler Names
+
+Callback props use `on...` names. Use `onSomething` for action callbacks and `onSomethingChange` for controlled value updates.
+
+Example:
+
+```tsx
+<StoryForm onGenerate={handleGenerate} />
+```
+
+Owning handlers use `handleSomething`.
+
+Example:
+
+```ts
+const handleGenerate = async () => {
+  // generation workflow
+};
+```
+
+State setters use `setSomething`.
+
+Examples:
+
+- `setGenre`
+- `setLoading`
+- `setDraftField`
+
+Example:
+
+```tsx
+<MultiSelectWithMode mode={raceMode} onModeChange={setRaceMode} />
+```
+
+The parent owns `setRaceMode`; the child receives it as `onModeChange` because it reports the next `mode` value.
+
+## Testing Structure
+
+Automated tests belong in a central `tests/` folder.
 
 ```txt
 tests/
@@ -119,451 +254,33 @@ tests/
   story-generator.test.tsx
 ```
 
-Start with tests for pure logic because they are the easiest to write and give
-high value:
-
-- `parseStory` accepts valid story JSON.
-- `parseStory` rejects invalid story JSON.
-- `validateTextValue` returns useful error messages.
-- `buildStoryPrompt` includes the selected generation options.
-
-UI tests can come later when the core logic is stable.
-
-## Folders To Add Only When Needed
-
-Do not add folders just because large companies use them. Add them when the
-project has enough code to make the separation useful.
-
-### `components/ui/`
-
-Add this only when there are many generic UI components used across the app,
-such as:
-
-- `Button`
-- `TextField`
-- `Modal`
-- `Tooltip`
-- `Select`
-
-Until then, keeping generic components directly in `components/` is simpler.
-
-### `lib/server/`
-
-Add this only when there is enough server-only shared logic to separate it from
-browser-safe logic.
-
-Examples:
-
-- OpenAI client creation.
-- Server-only request validation.
-- Server-only environment variable helpers.
-
-Never import `lib/server/` files into client components or hooks.
-
-### `lib/client/`
-
-Add this only when there is enough browser-only shared logic.
-
-Examples:
-
-- Clipboard helpers.
-- Local storage helpers.
-- Browser download helpers.
-
-### `features/`
-
-Add this only if StoryForge grows into several large product areas.
-
-For example:
-
-```txt
-features/
-  story-generation/
-  story-editing/
-  campaign-builder/
-```
-
-This is useful for bigger applications, but it is too much structure for the
-current version. The current `app/`, `components/`, `hooks/`, and `lib/` split is
-more appropriate for a bachelor thesis project.
-
-### Workplace-Specific Structures
-
-Some workplaces use their own patterns, such as TEA CUP or other internal
-architecture names. Those patterns can be useful in that company, but StoryForge
-should not copy them unless the project has the same needs.
-
-Prefer simple responsibility-based structure first:
-
-- Rendering in `app/` and `components/`.
-- State workflows in `hooks/`.
-- Shared rules in `lib/`.
-- Tests in `tests/`.
-- Documentation in `docs/`.
-
-## Naming Rules
-
-### Components
-
-Use `PascalCase.tsx` for React components.
-
-Examples:
-
-- `StoryForm.tsx`
-- `StoryResult.tsx`
-- `EncounterCard.tsx`
-
-PascalCase means each word starts with a capital letter. React components use
-PascalCase because JSX treats lowercase names like HTML elements and uppercase
-names like custom components.
-
-```tsx
-<StoryForm />
-```
-
-### Hooks
-
-Use `useThing.ts` for custom hooks.
-
-Examples:
-
-- `useStoryGenerator.ts`
-- `useStoryEditing.ts`
-
-The `use` prefix is required by React convention. It tells React, TypeScript,
-ESLint, and other developers that the function may call React hooks such as
-`useState` or `useEffect`.
-
-### Shared Helpers
-
-Use `camelCase.ts` for shared helper files.
-
-Examples:
-
-- `validation.ts`
-- `parser.ts`
-- `pdfExport.ts`
-
-Use action-based function names:
-
-- `validateTextValue`
-- `parseStory`
-- `buildStoryPrompt`
-- `exportStoryToPdf`
-
-The first word should usually be a verb because functions do something.
-
-### Types
-
-Keep central domain types in `lib/types.ts`.
-
-Examples:
-
-- `ParsedStory`
-- `ParsedNpc`
-- `ParsedEncounter`
-- `SelectionMode`
-
-Use `PascalCase` for TypeScript types because types describe named shapes.
-
-### Constants And Options
-
-Keep shared option lists and constants in `lib/data.ts`.
-
-Examples:
-
-- `GENRES`
-- `SETTINGS`
-- `SESSION_LENGTHS`
-- `ENCOUNTER_COUNT_BY_SESSION_LENGTH`
-
-Use `UPPER_SNAKE_CASE` for constants that behave like fixed application data.
-
-### API Routes
-
-Follow Next.js file names for routes.
-
-Example:
-
-```txt
-app/api/generate/route.ts
-```
-
-The folder path defines the URL, and `route.ts` defines the request handlers.
-For example, `app/api/generate/route.ts` creates `/api/generate`.
-
-### Tests
-
-Prefer the central `tests/` folder for StoryForge.
-
-Examples:
-
-- `tests/parser.test.ts`
-- `tests/validation.test.ts`
-- `tests/prompts.test.ts`
-
-Small colocated tests are also common in the industry, but a central `tests/`
-folder is easier to find in a smaller learning project.
-
-## Function Naming Rules
-
-### `onSomething`
-
-Use `onSomething` for callback props received by a component.
-
-Example:
-
-```tsx
-<StoryForm onGenerate={handleGenerate} />
-```
-
-`onGenerate` means "generation happened or was requested." The component does
-not need to know how generation works. It only calls the prop.
-
-### `handleSomething`
-
-Use `handleSomething` for the function that owns the action.
-
-Example:
-
-```ts
-const handleGenerate = async () => {
-  // validate form, call API, parse result
-};
-```
-
-`handleGenerate` means "this function handles the generate action."
-
-### `setSomething`
-
-Use `setSomething` for state update functions.
-
-Examples:
-
-- `setGenre`
-- `setLoading`
-- `setDraftField`
-
-React's `useState` returns this naming pattern naturally:
-
-```ts
-const [genre, setGenre] = useState("Fantasy");
-```
-
-### `validateSomething`
-
-Use `validateSomething` for functions that check if data is acceptable.
-
-Examples:
-
-- `validateTextValue`
-- `validateSelectionValue`
-
-Validation functions should return a clear result, such as an error message or
-an object describing success/failure.
-
-### `parseSomething`
-
-Use `parseSomething` for functions that convert unknown/raw input into a trusted
-application shape.
-
-Example:
-
-```ts
-const story = parseStory(aiResponse);
-```
-
-Parsing is stricter than formatting. A parser should reject data that does not
-match the expected structure.
-
-## File Splitting Rules
-
-Split a UI component when:
-
-- The JSX is becoming hard to scan.
-- A section has its own props.
-- A section repeats in a list.
-- The section has a clear name in the user interface.
-
-Split a hook when:
-
-- It manages more than one workflow.
-- Part of the logic could be reused by another component.
-- The hook return value becomes difficult to understand.
-
-Move logic to `lib/` when:
-
-- It is shared by multiple files.
-- It is pure logic that can be tested without rendering React.
-- It defines StoryForge domain rules.
-- It controls parser, prompt, validation, or export behavior.
-
-Keep logic inside a component when:
-
-- It only affects that component's display.
-- It is a short helper for class names or labels.
-- Moving it would make the code harder to follow.
-
-Avoid abstractions until there are at least two real users of the same logic.
-One clear duplicated line is often better than one confusing abstraction.
+Pure logic tests cover the highest-value behavior:
+
+- valid story JSON parses into `ParsedStory`
+- invalid story JSON is rejected
+- validation helpers return expected error messages
+- prompt generation includes selected form options
+- story transforms trim and clone story data correctly
+
+## Placement Guide
+
+Use this placement model:
+
+1. UI rendering belongs in `app/` or `components/`.
+2. Client workflow state belongs in `hooks/`.
+3. Shared types, constants, validation, parsing, transforms, prompts, and export logic belong in `lib/`.
+4. Generic UI primitives and form controls belong in `components/ui/`.
+5. Generated-story UI belongs in `components/story/`.
+6. Automated tests belong in `tests/`.
+7. Static browser assets belong in `public/`.
+8. Source design assets belong in `assets/`.
+9. Documentation belongs in `docs/`.
 
 ## Glossary
 
-### React Component
+Detailed explanations of naming patterns, React terms, StoryForge domain terms, and architecture principles live in [glossary.md](./glossary.md).
 
-A React component is a function that returns UI.
+## Related Docs
 
-```tsx
-function StoryForm() {
-  return <form>...</form>;
-}
-```
-
-Components are named with PascalCase so React knows they are custom UI pieces.
-
-Official docs: [Your First Component](https://react.dev/learn/your-first-component)
-
-### Props
-
-Props are values passed from a parent component to a child component.
-
-```tsx
-<StoryResult story={parsedStory} />
-```
-
-In this example, `story` is a prop. Props let a parent control what a child
-renders.
-
-Official docs: [Passing Props to a Component](https://react.dev/learn/passing-props-to-a-component)
-
-### State
-
-State is component-owned memory. Use state for values that change over time and
-should update the screen.
-
-```ts
-const [loading, setLoading] = useState(false);
-```
-
-When `loading` changes, React can render the component again with the new value.
-
-Official docs: [State: A Component's Memory](https://react.dev/learn/state-a-components-memory)
-
-### Hook
-
-A hook is a function that lets React code connect to React features.
-
-Examples:
-
-- `useState` hooks into React state.
-- `useEffect` hooks into React's render lifecycle.
-- `useStoryGenerator` is a custom hook that groups StoryForge workflow logic.
-
-Hooks are called hooks because they "hook into" React behavior from a function
-component.
-
-Official docs: [Built-in React Hooks](https://react.dev/reference/react/hooks)
-
-### `useState`
-
-`useState` stores a value that affects rendering.
-
-```ts
-const [genre, setGenre] = useState("Fantasy");
-```
-
-`genre` is the current value. `setGenre` updates it.
-
-Official docs: [useState](https://react.dev/reference/react/useState)
-
-### `useEffect`
-
-`useEffect` runs after React renders. Use it to synchronize with something
-outside React, such as the browser window, document title, subscriptions, or
-manual DOM behavior.
-
-Example from StoryForge:
-
-```ts
-useEffect(() => {
-  if (!parsed) return;
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}, [parsed]);
-```
-
-This means "when `parsed` changes and a story exists, scroll the window to the
-top."
-
-Official docs: [useEffect](https://react.dev/reference/react/useEffect)
-
-### Event Names Like `onChange`
-
-React uses names like `onChange`, `onClick`, and `onBlur` for events.
-
-`onChange` means "run this function when the value changes."
-
-```tsx
-<input onChange={(event) => setGenre(event.target.value)} />
-```
-
-Official docs: [Responding to Events](https://react.dev/learn/responding-to-events)
-
-### Handler Names Like `handleGenerate`
-
-A handler is a function that responds to an event or user action.
-
-Example:
-
-```ts
-const handleGenerate = async () => {
-  // handle the Generate button action
-};
-```
-
-Use `handle...` for the function that owns the behavior. Use `on...` for the
-prop that passes the behavior to a child component.
-
-### Single Source Of Truth
-
-Single source of truth means one place owns a shared value or rule.
-
-For example, `SESSION_LENGTHS` should live in `lib/data.ts`. Other files should
-import it instead of creating their own session length lists.
-
-This prevents bugs where two files disagree about the same concept.
-
-### Parser
-
-A parser converts raw input into a trusted application shape.
-
-In StoryForge, `parseStory` receives raw AI text, parses JSON, checks the story
-structure, trims strings, and returns a `ParsedStory`.
-
-### Validator
-
-A validator checks whether a value follows a rule.
-
-In StoryForge, `validateTextValue` checks whether text is present, contains a
-letter, and stays under the maximum length.
-
-### API Route
-
-An API route is a server endpoint inside the Next.js app.
-
-In StoryForge, `app/api/generate/route.ts` receives generation options, builds
-the prompt, calls the AI API, and returns the generated result.
-
-Official docs: [Route Handlers](https://nextjs.org/docs/app/building-your-application/routing/route-handlers)
-
-## Practical Rule Of Thumb
-
-When adding new code, ask:
-
-1. Does this render UI? Put it in `app/` or `components/`.
-2. Does this manage client state or user workflow? Put it in `hooks/`.
-3. Is this a shared rule, type, parser, prompt, or constant? Put it in `lib/`.
-4. Is this a test? Put it in `tests/`.
-5. Is this documentation? Put it in `docs/`.
-
-If the answer is unclear, keep the code close to where it is used. Move it only
-when sharing it makes the project easier to understand.
+- [Documentation Index](./README.md)
+- [Versioning](./versioning.md)

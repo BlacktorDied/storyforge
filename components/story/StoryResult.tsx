@@ -39,7 +39,6 @@ export default function StoryResult({ story, onStoryChange }: Props) {
         onChange={(value) => setDraftField("title", value)}
         onSave={saveEdit}
         onCancel={cancelEdit}
-        mode="input"
         error={fieldErrors.title}
         isTitle
       />
@@ -109,7 +108,7 @@ export default function StoryResult({ story, onStoryChange }: Props) {
                 }}
                 isEditing={isEditing(key)}
                 onStartEdit={() => startEdit(key)}
-                onChange={(field, value) => {
+                onFieldChange={(field, value) => {
                   setDraftEncounterField(index, field, value);
                 }}
                 onDelete={() => deleteStoryItem("encounters", index)}
@@ -144,7 +143,7 @@ export default function StoryResult({ story, onStoryChange }: Props) {
                 }}
                 isEditing={isEditing(key)}
                 onStartEdit={() => startEdit(key)}
-                onChange={(field, value) => {
+                onFieldChange={(field, value) => {
                   setDraftNpcField(index, field, value);
                 }}
                 onDelete={() => deleteStoryItem("npcs", index)}

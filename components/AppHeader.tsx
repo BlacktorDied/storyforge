@@ -1,36 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-import { getInputClass } from "./inputStyles";
 import StoryForgeIcon from "./icons/StoryForgeIcon";
-
-type ThemeMode = "system" | "light" | "dark";
+import SelectField from "./ui/SelectField";
+import { useTheme, type ThemeMode } from "@/hooks/useTheme";
 
 export default function AppHeader() {
-  const [themeMode, setThemeMode] = useState<ThemeMode>("system");
-
-  useEffect(() => {
-    const applyTheme = () => {
-      const prefersDark = window.matchMedia(
-        "(prefers-color-scheme: dark)",
-      ).matches;
-
-      const shouldUseDark =
-        themeMode === "dark" || (themeMode === "system" && prefersDark);
-
-      document.documentElement.classList.toggle("dark", shouldUseDark);
-    };
-
-    applyTheme();
-
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    mediaQuery.addEventListener("change", applyTheme);
-
-    return () => {
-      mediaQuery.removeEventListener("change", applyTheme);
-    };
-  }, [themeMode]);
+  const { themeMode, setThemeMode } = useTheme();
 
   return (
     <header className="border-border bg-background/90 sticky top-0 z-10 border-b backdrop-blur">
@@ -47,15 +22,14 @@ export default function AppHeader() {
 
         <div className="w-40">
           <label className="text-text block text-sm font-semibold">Theme</label>
-          <select
+          <SelectField
             value={themeMode}
             onChange={(e) => setThemeMode(e.target.value as ThemeMode)}
-            className={getInputClass()}
           >
             <option value="system">Match system</option>
             <option value="light">Light</option>
             <option value="dark">Dark</option>
-          </select>
+          </SelectField>
         </div>
       </div>
     </header>

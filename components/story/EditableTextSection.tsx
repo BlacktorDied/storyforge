@@ -1,14 +1,13 @@
 "use client";
 
-import TextareaAutosize from "react-textarea-autosize";
-
-import FieldError from "@/components/FieldError";
-import { getInputClass } from "@/components/inputStyles";
+import FieldError from "@/components/ui/FieldError";
+import TextareaField from "@/components/ui/TextareaField";
+import TextInput from "@/components/ui/TextInput";
 
 import EditButton from "./EditButton";
 import SaveCancelBar from "./SaveCancelBar";
 
-type EditableTextSectionProps = {
+type Props = {
   label: string;
   value: string;
   draftValue: string;
@@ -17,7 +16,6 @@ type EditableTextSectionProps = {
   onChange: (value: string) => void;
   onSave: () => void;
   onCancel: () => void;
-  mode?: "input" | "textarea";
   minRows?: number;
   isTitle?: boolean;
   error?: string | null;
@@ -32,21 +30,20 @@ export default function EditableTextSection({
   onChange,
   onSave,
   onCancel,
-  mode = "textarea",
   minRows = 1,
   isTitle = false,
   error,
-}: EditableTextSectionProps) {
+}: Props) {
   if (isTitle) {
     return (
-      <div className="group flex items-center gap-2">
+      <div className="flex items-center gap-2">
         {isEditing ? (
           <div className="w-full">
-            <input
-              type="text"
+            <TextInput
               value={draftValue}
               onChange={(event) => onChange(event.target.value)}
-              className={`${getInputClass(Boolean(error))} text-xl font-bold`}
+              className="text-xl font-bold"
+              hasError={Boolean(error)}
               aria-label={label}
               aria-invalid={Boolean(error)}
             />
@@ -64,32 +61,22 @@ export default function EditableTextSection({
   }
 
   return (
-    <section className="group">
+    <section>
       <div className="mb-1 flex items-center gap-2">
         <h3 className="font-semibold">{label}</h3>
         {!isEditing && <EditButton onClick={onStartEdit} />}
       </div>
       {isEditing ? (
         <>
-          {mode === "input" ? (
-            <input
-              type="text"
-              value={draftValue}
-              onChange={(event) => onChange(event.target.value)}
-              className={getInputClass(Boolean(error))}
-              aria-label={label}
-              aria-invalid={Boolean(error)}
-            />
-          ) : (
-            <TextareaAutosize
-              value={draftValue}
-              minRows={minRows}
-              onChange={(event) => onChange(event.target.value)}
-              className={`${getInputClass(Boolean(error))} resize-none`}
-              aria-label={label}
-              aria-invalid={Boolean(error)}
-            />
-          )}
+          <TextareaField
+            value={draftValue}
+            minRows={minRows}
+            onChange={(event) => onChange(event.target.value)}
+            hasError={Boolean(error)}
+            aria-label={label}
+            aria-invalid={Boolean(error)}
+          />
+
           <FieldError error={error} />
           <SaveCancelBar onSave={onSave} onCancel={onCancel} />
         </>

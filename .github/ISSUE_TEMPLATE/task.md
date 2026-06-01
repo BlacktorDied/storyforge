@@ -15,6 +15,12 @@ Describe what should be done.
 - [ ] Requirement 1
 - [ ] Requirement 2
 
+## Version impact
+
+Choose one: `major`, `minor`, `patch`, `none`
+
+Explain the expected app version impact. See `docs/versioning.md`.
+
 ## Notes
 
 Add extra context if needed.

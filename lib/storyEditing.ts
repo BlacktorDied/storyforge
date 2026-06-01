@@ -1,26 +1,17 @@
-import type { ParsedEncounter, ParsedNpc, ParsedStory } from "@/lib/types";
+import {
+  isStoryTextField,
+  type StoryListField,
+  type StoryTextField,
+} from "@/lib/storyFields";
+import { trimEncounter, trimNpc } from "@/lib/storyTransforms";
+import type { ParsedStory } from "@/lib/types";
 
-export type StoryTextField =
-  | "title"
-  | "setting"
-  | "background"
-  | "adventureHook"
-  | "mainQuest";
-
-export type StoryListField = "encounters" | "npcs";
+export { isStoryTextField, type StoryListField, type StoryTextField };
 
 type ApplyStoryEditParams = {
   editingSection: string | null;
   story: ParsedStory;
   draft: ParsedStory;
-};
-
-const storyTextFields: Record<StoryTextField, true> = {
-  title: true,
-  setting: true,
-  background: true,
-  adventureHook: true,
-  mainQuest: true,
 };
 
 export function applyStoryEdit({
@@ -48,10 +39,7 @@ export function applyStoryEdit({
       return story;
     }
 
-    const trimmedEncounter: ParsedEncounter = {
-      title: encounter.title.trim(),
-      content: encounter.content.trim(),
-    };
+    const trimmedEncounter = trimEncounter(encounter);
 
     return {
       ...story,
@@ -70,15 +58,7 @@ export function applyStoryEdit({
       return story;
     }
 
-    const trimmedNpc: ParsedNpc = {
-      name: npc.name.trim(),
-      race: npc.race.trim(),
-      class: npc.class.trim(),
-      role: npc.role.trim(),
-      location: npc.location.trim(),
-      motivation: npc.motivation.trim(),
-      description: npc.description.trim(),
-    };
+    const trimmedNpc = trimNpc(npc);
 
     return {
       ...story,
@@ -89,10 +69,6 @@ export function applyStoryEdit({
   }
 
   return story;
-}
-
-export function isStoryTextField(section: string): section is StoryTextField {
-  return section in storyTextFields;
 }
 
 export function getListItemIndex(section: string, prefix: "encounter" | "npc") {

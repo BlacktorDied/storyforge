@@ -7,14 +7,14 @@ type Props = {
   label: string;
   options: readonly string[];
   mode: SelectionMode;
-  setMode: (mode: SelectionMode) => void;
-  selected: string[];
-  setSelected: (values: string[]) => void;
+  onModeChange: (mode: SelectionMode) => void;
+  selectedOptions: string[];
+  onSelectedOptionsChange: (options: string[]) => void;
   allDescription: string;
   customDescription?: string;
   error?: string | null;
   onTouch?: () => void;
-  resetValidation?: () => void;
+  onValidationReset?: () => void;
 };
 
 export default function MultiSelectWithMode({
@@ -22,14 +22,14 @@ export default function MultiSelectWithMode({
   label,
   options,
   mode,
-  setMode,
-  selected,
-  setSelected,
+  onModeChange,
+  selectedOptions,
+  onSelectedOptionsChange,
   allDescription,
   customDescription = "Restrict generated NPCs to only the selected options.",
   error,
   onTouch,
-  resetValidation,
+  onValidationReset,
 }: Props) {
   const errorId = id ? `${id}-error` : undefined;
 
@@ -52,9 +52,9 @@ export default function MultiSelectWithMode({
             type="radio"
             checked={mode === "all"}
             onChange={() => {
-              setMode("all");
-              setSelected([]);
-              resetValidation?.();
+              onModeChange("all");
+              onSelectedOptionsChange([]);
+              onValidationReset?.();
             }}
             className="accent-primary mr-2"
           />
@@ -70,8 +70,8 @@ export default function MultiSelectWithMode({
             checked={mode === "custom"}
             aria-describedby={error ? errorId : undefined}
             onChange={() => {
-              setMode("custom");
-              resetValidation?.();
+              onModeChange("custom");
+              onValidationReset?.();
             }}
             className={`mr-2 ${error ? "accent-error" : "accent-primary"}`}
           />
@@ -87,18 +87,23 @@ export default function MultiSelectWithMode({
           className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2"
         >
           {options.map((option) => (
-            <label key={option} className="flex items-center gap-2 text-sm">
+            <label
+              key={option}
+              className="flex cursor-pointer items-center gap-2 text-sm"
+            >
               <input
                 type="checkbox"
-                checked={selected.includes(option)}
+                checked={selectedOptions.includes(option)}
                 className="accent-primary"
                 onChange={(e) => {
                   onTouch?.();
 
                   if (e.target.checked) {
-                    setSelected([...selected, option]);
+                    onSelectedOptionsChange([...selectedOptions, option]);
                   } else {
-                    setSelected(selected.filter((item) => item !== option));
+                    onSelectedOptionsChange(
+                      selectedOptions.filter((item) => item !== option),
+                    );
                   }
                 }}
               />

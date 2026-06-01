@@ -1,22 +1,21 @@
 "use client";
 
-import TextareaAutosize from "react-textarea-autosize";
-
-import FieldError from "@/components/FieldError";
-import { getInputClass } from "@/components/inputStyles";
+import FieldError from "@/components/ui/FieldError";
+import TextareaField from "@/components/ui/TextareaField";
+import TextInput from "@/components/ui/TextInput";
 import type { ParsedNpc } from "@/lib/types";
 
 import DeleteButton from "./DeleteButton";
 import EditButton from "./EditButton";
 import SaveCancelBar from "./SaveCancelBar";
 
-type NpcCardProps = {
+type Props = {
   npc: ParsedNpc;
   draftNpc?: ParsedNpc;
   errors?: Partial<Record<keyof ParsedNpc, string>>;
   isEditing: boolean;
   onStartEdit: () => void;
-  onChange: (field: keyof ParsedNpc, value: string) => void;
+  onFieldChange: (field: keyof ParsedNpc, value: string) => void;
   onDelete: () => void;
   onSave: () => void;
   onCancel: () => void;
@@ -28,79 +27,78 @@ export default function NpcCard({
   errors = {},
   isEditing,
   onStartEdit,
-  onChange,
+  onFieldChange,
   onDelete,
   onSave,
   onCancel,
-}: NpcCardProps) {
+}: Props) {
   return (
     <div className="border-border bg-surface print-card group rounded border p-3">
       {isEditing ? (
         <div className="space-y-2">
-          <input
-            type="text"
+          <TextInput
             value={draftNpc?.name ?? npc.name}
-            onChange={(event) => onChange("name", event.target.value)}
-            className={`${getInputClass(Boolean(errors.name))} font-semibold`}
+            onChange={(event) => onFieldChange("name", event.target.value)}
+            className="font-semibold"
+            hasError={Boolean(errors.name)}
             placeholder="Name"
             aria-invalid={Boolean(errors.name)}
           />
           <FieldError error={errors.name} />
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <input
-                type="text"
+              <TextInput
                 value={draftNpc?.race ?? npc.race}
-                onChange={(event) => onChange("race", event.target.value)}
-                className={getInputClass(Boolean(errors.race))}
+                onChange={(event) => onFieldChange("race", event.target.value)}
+                hasError={Boolean(errors.race)}
                 placeholder="Race"
                 aria-invalid={Boolean(errors.race)}
               />
               <FieldError error={errors.race} />
             </div>
             <div>
-              <input
-                type="text"
+              <TextInput
                 value={draftNpc?.class ?? npc.class}
-                onChange={(event) => onChange("class", event.target.value)}
-                className={getInputClass(Boolean(errors.class))}
+                onChange={(event) => onFieldChange("class", event.target.value)}
+                hasError={Boolean(errors.class)}
                 placeholder="Class"
                 aria-invalid={Boolean(errors.class)}
               />
               <FieldError error={errors.class} />
             </div>
           </div>
-          <input
-            type="text"
+          <TextInput
             value={draftNpc?.role ?? npc.role}
-            onChange={(event) => onChange("role", event.target.value)}
-            className={getInputClass(Boolean(errors.role))}
+            onChange={(event) => onFieldChange("role", event.target.value)}
+            hasError={Boolean(errors.role)}
             placeholder="Role"
             aria-invalid={Boolean(errors.role)}
           />
           <FieldError error={errors.role} />
-          <input
-            type="text"
+          <TextInput
             value={draftNpc?.location ?? npc.location}
-            onChange={(event) => onChange("location", event.target.value)}
-            className={getInputClass(Boolean(errors.location))}
+            onChange={(event) => onFieldChange("location", event.target.value)}
+            hasError={Boolean(errors.location)}
             placeholder="Location"
             aria-invalid={Boolean(errors.location)}
           />
           <FieldError error={errors.location} />
-          <input
-            type="text"
+          <TextInput
             value={draftNpc?.motivation ?? npc.motivation}
-            onChange={(event) => onChange("motivation", event.target.value)}
-            className={getInputClass(Boolean(errors.motivation))}
+            onChange={(event) =>
+              onFieldChange("motivation", event.target.value)
+            }
+            hasError={Boolean(errors.motivation)}
             placeholder="Motivation"
             aria-invalid={Boolean(errors.motivation)}
           />
           <FieldError error={errors.motivation} />
-          <TextareaAutosize
+          <TextareaField
             value={draftNpc?.description ?? npc.description}
-            onChange={(event) => onChange("description", event.target.value)}
-            className={`${getInputClass(Boolean(errors.description))} resize-none`}
+            onChange={(event) =>
+              onFieldChange("description", event.target.value)
+            }
+            hasError={Boolean(errors.description)}
             placeholder="Description"
             aria-invalid={Boolean(errors.description)}
           />

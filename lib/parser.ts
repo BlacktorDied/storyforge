@@ -1,3 +1,5 @@
+import { encounterFields, npcFields, storyTextFields } from "@/lib/storyFields";
+import { trimStory } from "@/lib/storyTransforms";
 import type { ParsedEncounter, ParsedNpc, ParsedStory } from "@/lib/types";
 
 function isNonEmptyString(value: unknown): value is string {
@@ -7,21 +9,13 @@ function isNonEmptyString(value: unknown): value is string {
 function isValidEncounter(value: unknown): value is ParsedEncounter {
   if (!value || typeof value !== "object") return false;
   const e = value as ParsedEncounter;
-  return isNonEmptyString(e.title) && isNonEmptyString(e.content);
+  return encounterFields.every((field) => isNonEmptyString(e[field]));
 }
 
 function isValidNpc(value: unknown): value is ParsedNpc {
   if (!value || typeof value !== "object") return false;
   const n = value as ParsedNpc;
-  return (
-    isNonEmptyString(n.name) &&
-    isNonEmptyString(n.race) &&
-    isNonEmptyString(n.class) &&
-    isNonEmptyString(n.role) &&
-    isNonEmptyString(n.location) &&
-    isNonEmptyString(n.motivation) &&
-    isNonEmptyString(n.description)
-  );
+  return npcFields.every((field) => isNonEmptyString(n[field]));
 }
 
 function isValidStory(data: unknown): data is ParsedStory {
@@ -30,11 +24,7 @@ function isValidStory(data: unknown): data is ParsedStory {
   const story = data as ParsedStory;
 
   return (
-    isNonEmptyString(story.title) &&
-    isNonEmptyString(story.setting) &&
-    isNonEmptyString(story.background) &&
-    isNonEmptyString(story.adventureHook) &&
-    isNonEmptyString(story.mainQuest) &&
+    storyTextFields.every((field) => isNonEmptyString(story[field])) &&
     Array.isArray(story.encounters) &&
     story.encounters.length > 0 &&
     story.encounters.every(isValidEncounter) &&
@@ -61,28 +51,4 @@ export function parseStory(response: string): ParsedStory {
   } catch {
     throw new Error("Failed to parse AI response");
   }
-}
-
-function trimStory(story: ParsedStory): ParsedStory {
-  return {
-    ...story,
-    title: story.title.trim(),
-    setting: story.setting.trim(),
-    background: story.background.trim(),
-    adventureHook: story.adventureHook.trim(),
-    mainQuest: story.mainQuest.trim(),
-    encounters: story.encounters.map((encounter) => ({
-      title: encounter.title.trim(),
-      content: encounter.content.trim(),
-    })),
-    npcs: story.npcs.map((npc) => ({
-      name: npc.name.trim(),
-      race: npc.race.trim(),
-      class: npc.class.trim(),
-      role: npc.role.trim(),
-      location: npc.location.trim(),
-      motivation: npc.motivation.trim(),
-      description: npc.description.trim(),
-    })),
-  };
 }

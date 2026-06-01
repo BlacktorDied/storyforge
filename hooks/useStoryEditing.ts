@@ -7,6 +7,7 @@ import {
   type StoryListField,
   type StoryTextField,
 } from "@/lib/storyEditing";
+import { cloneStoryDraft } from "@/lib/storyTransforms";
 import type { ParsedEncounter, ParsedNpc, ParsedStory } from "@/lib/types";
 import {
   getEncounterErrorKey,
@@ -35,11 +36,7 @@ export function useStoryEditing(
   // =========================================================================
 
   const startEdit = (section: string) => {
-    setDraft({
-      ...story,
-      encounters: story.encounters.map((encounter) => ({ ...encounter })),
-      npcs: story.npcs.map((npc) => ({ ...npc })),
-    });
+    setDraft(cloneStoryDraft(story));
     setFieldErrors({});
     setEditingSection(section);
   };

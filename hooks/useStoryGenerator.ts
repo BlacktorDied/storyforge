@@ -8,10 +8,13 @@ import {
   SETTINGS,
   type SessionLength,
 } from "@/lib/data";
+import {
+  getFirstGenerationErrorField,
+  getGenerationFormErrors,
+} from "@/lib/generationValidation";
 import { MOCK_RESULT, USE_MOCK } from "@/lib/mockStory";
 import { parseStory } from "@/lib/parser";
 import type { ParsedStory, SelectionMode } from "@/lib/types";
-import { validateSelectionValue, validateTextValue } from "@/lib/validation";
 
 export function useStoryGenerator() {
   // =========================================================================
@@ -49,35 +52,21 @@ export function useStoryGenerator() {
   const [raceTouched, setRaceTouched] = useState(false);
   const [classTouched, setClassTouched] = useState(false);
 
-  const genreError =
-    genreTouched && genre === "Other"
-      ? validateTextValue(
-          customGenre,
-          "genre",
-          40,
-          "Please enter a custom genre.",
-        )
-      : null;
+  const formErrors = getGenerationFormErrors({
+    genre,
+    customGenre,
+    setting,
+    customSetting,
+    raceMode,
+    selectedRaces,
+    classMode,
+    selectedClasses,
+  });
 
-  const settingError =
-    settingTouched && setting === "Other"
-      ? validateTextValue(
-          customSetting,
-          "setting",
-          40,
-          "Please enter a custom setting.",
-        )
-      : null;
-
-  const raceError =
-    raceTouched && raceMode === "custom"
-      ? validateSelectionValue(selectedRaces, "race")
-      : null;
-
-  const classError =
-    classTouched && classMode === "custom"
-      ? validateSelectionValue(selectedClasses, "class")
-      : null;
+  const genreError = genreTouched ? formErrors.genreError : null;
+  const settingError = settingTouched ? formErrors.settingError : null;
+  const raceError = raceTouched ? formErrors.raceError : null;
+  const classError = classTouched ? formErrors.classError : null;
 
   // =========================================================================
   // UI State
@@ -109,45 +98,6 @@ export function useStoryGenerator() {
   // Helpers
   // =========================================================================
 
-  const validateForm = () => {
-    const genreValidationError =
-      genre === "Other"
-        ? validateTextValue(
-            customGenre,
-            "genre",
-            40,
-            "Please enter a custom genre.",
-          )
-        : null;
-
-    const settingValidationError =
-      setting === "Other"
-        ? validateTextValue(
-            customSetting,
-            "setting",
-            40,
-            "Please enter a custom setting.",
-          )
-        : null;
-
-    const raceValidationError =
-      raceMode === "custom"
-        ? validateSelectionValue(selectedRaces, "race")
-        : null;
-
-    const classValidationError =
-      classMode === "custom"
-        ? validateSelectionValue(selectedClasses, "class")
-        : null;
-
-    return !(
-      genreValidationError ||
-      settingValidationError ||
-      raceValidationError ||
-      classValidationError
-    );
-  };
-
   const scrollToField = (id: string) => {
     document.getElementById(id)?.scrollIntoView({
       behavior: "smooth",
@@ -171,41 +121,22 @@ export function useStoryGenerator() {
     const finalGenre = genre === "Other" ? customGenre.trim() : genre;
     const finalSetting = setting === "Other" ? customSetting.trim() : setting;
 
-    if (!validateForm()) {
+    const currentFormErrors = getGenerationFormErrors({
+      genre,
+      customGenre,
+      setting,
+      customSetting,
+      raceMode,
+      selectedRaces,
+      classMode,
+      selectedClasses,
+    });
+
+    const firstErrorField = getFirstGenerationErrorField(currentFormErrors);
+
+    if (firstErrorField) {
       setLoading(false);
-
-      if (
-        genre === "Other" &&
-        validateTextValue(
-          customGenre,
-          "genre",
-          40,
-          "Please enter a custom genre.",
-        )
-      ) {
-        scrollToField("genre-field");
-      } else if (
-        setting === "Other" &&
-        validateTextValue(
-          customSetting,
-          "setting",
-          40,
-          "Please enter a custom setting.",
-        )
-      ) {
-        scrollToField("setting-field");
-      } else if (
-        raceMode === "custom" &&
-        validateSelectionValue(selectedRaces, "race")
-      ) {
-        scrollToField("races-field");
-      } else if (
-        classMode === "custom" &&
-        validateSelectionValue(selectedClasses, "class")
-      ) {
-        scrollToField("classes-field");
-      }
-
+      scrollToField(firstErrorField);
       return;
     }
 
@@ -289,53 +220,53 @@ export function useStoryGenerator() {
 
     formProps: {
       genre,
-      setGenre,
+      onGenreChange: setGenre,
       customGenre,
-      setCustomGenre,
+      onCustomGenreChange: setCustomGenre,
       genreError,
-      touchGenreField: () => setGenreTouched(true),
-      resetGenreValidation: () => {
+      onGenreTouch: () => setGenreTouched(true),
+      onGenreValidationReset: () => {
         setGenreTouched(false);
       },
 
       setting,
-      setSetting,
+      onSettingChange: setSetting,
       customSetting,
-      setCustomSetting,
+      onCustomSettingChange: setCustomSetting,
       settingError,
-      touchSettingField: () => setSettingTouched(true),
-      resetSettingValidation: () => {
+      onSettingTouch: () => setSettingTouched(true),
+      onSettingValidationReset: () => {
         setSettingTouched(false);
       },
 
       raceMode,
-      setRaceMode,
+      onRaceModeChange: setRaceMode,
       selectedRaces,
-      setSelectedRaces,
+      onSelectedRacesChange: setSelectedRaces,
       raceError,
-      touchRaceField: () => setRaceTouched(true),
-      resetRaceValidation: () => {
+      onRaceTouch: () => setRaceTouched(true),
+      onRaceValidationReset: () => {
         setRaceTouched(false);
       },
 
       classMode,
-      setClassMode,
+      onClassModeChange: setClassMode,
       selectedClasses,
-      setSelectedClasses,
+      onSelectedClassesChange: setSelectedClasses,
       classError,
-      touchClassField: () => setClassTouched(true),
-      resetClassValidation: () => {
+      onClassTouch: () => setClassTouched(true),
+      onClassValidationReset: () => {
         setClassTouched(false);
       },
 
       sessionLength,
-      setSessionLength,
+      onSessionLengthChange: setSessionLength,
 
       partySize,
-      setPartySize,
+      onPartySizeChange: setPartySize,
 
       level,
-      setLevel,
+      onLevelChange: setLevel,
 
       loading,
       onGenerate: handleGenerate,

@@ -1,9 +1,8 @@
 "use client";
 
-import TextareaAutosize from "react-textarea-autosize";
-
-import FieldError from "@/components/FieldError";
-import { getInputClass } from "@/components/inputStyles";
+import FieldError from "@/components/ui/FieldError";
+import TextareaField from "@/components/ui/TextareaField";
+import TextInput from "@/components/ui/TextInput";
 import type { ParsedEncounter } from "@/lib/types";
 
 import DeleteButton from "./DeleteButton";
@@ -16,7 +15,7 @@ type EncounterCardProps = {
   errors?: Partial<Record<keyof ParsedEncounter, string>>;
   isEditing: boolean;
   onStartEdit: () => void;
-  onChange: (field: keyof ParsedEncounter, value: string) => void;
+  onFieldChange: (field: keyof ParsedEncounter, value: string) => void;
   onDelete: () => void;
   onSave: () => void;
   onCancel: () => void;
@@ -28,7 +27,7 @@ export default function EncounterCard({
   errors = {},
   isEditing,
   onStartEdit,
-  onChange,
+  onFieldChange,
   onDelete,
   onSave,
   onCancel,
@@ -37,19 +36,19 @@ export default function EncounterCard({
     <div className="border-border bg-surface print-card group rounded border p-3">
       {isEditing ? (
         <div className="space-y-2">
-          <input
-            type="text"
+          <TextInput
             value={draftEncounter?.title ?? encounter.title}
-            onChange={(event) => onChange("title", event.target.value)}
-            className={`${getInputClass(Boolean(errors.title))} font-semibold`}
+            onChange={(event) => onFieldChange("title", event.target.value)}
+            className="font-semibold"
+            hasError={Boolean(errors.title)}
             placeholder="Encounter title"
             aria-invalid={Boolean(errors.title)}
           />
           <FieldError error={errors.title} />
-          <TextareaAutosize
+          <TextareaField
             value={draftEncounter?.content ?? encounter.content}
-            onChange={(event) => onChange("content", event.target.value)}
-            className={`${getInputClass(Boolean(errors.content))} resize-none`}
+            onChange={(event) => onFieldChange("content", event.target.value)}
+            hasError={Boolean(errors.content)}
             placeholder="Encounter description"
             aria-invalid={Boolean(errors.content)}
           />
