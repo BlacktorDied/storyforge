@@ -16,9 +16,9 @@ Official docs: [Semantic Versioning 2.0.0](https://semver.org/)
 
 ## Version Rules
 
-- **Major version:** increment for breaking changes that change expected user workflows, public data shapes, route contracts, or generated story compatibility.
-- **Minor version:** increment for backward-compatible features, reusable foundations, meaningful UI additions, new export options, new generation options, or architecture improvements that expand the app without breaking existing behavior.
-- **Patch version:** increment for backward-compatible bug fixes, small copy updates, styling fixes, documentation fixes, dependency patch updates, and internal cleanup with no meaningful feature expansion.
+- **Major version:** increment for breaking changes that change expected user workflows, public data shapes, route contracts or generated story compatibility.
+- **Minor version:** increment for backward-compatible features, reusable foundations, meaningful UI additions, new export options, new generation options or architecture improvements that expand the app without breaking existing behavior.
+- **Patch version:** increment for backward-compatible bug fixes, small copy updates, styling fixes, documentation fixes, dependency patch updates and internal cleanup with no meaningful feature expansion.
 
 For `0.x.y` thesis-stage releases, StoryForge still uses the same practical meaning: `0.MINOR.PATCH`. A minor bump marks a meaningful project milestone, while a patch bump marks a safe fix or small cleanup.
 
@@ -29,9 +29,9 @@ Each issue should include a **Version impact** section.
 Use one of these values:
 
 - `major`: breaking change or incompatible behavior change
-- `minor`: backward-compatible feature, reusable foundation, or meaningful architecture improvement
-- `patch`: bug fix, documentation update, styling fix, or small internal cleanup
-- `none`: planning, research, duplicate issue, or work that does not ship a code/documentation change
+- `minor`: backward-compatible feature, reusable foundation or meaningful architecture improvement
+- `patch`: bug fix, documentation update, styling fix or small internal cleanup
+- `none`: planning, research, duplicate issue or work that does not ship a code/documentation change
 
 Issue version impact is an estimate. The final pull request or release decides the actual version bump based on the combined shipped changes.
 
@@ -49,4 +49,4 @@ Issue version impact is an estimate. The final pull request or release decides t
 2. Pick the highest required version impact: major beats minor, minor beats patch.
 3. Update `package.json` and `package-lock.json`.
 4. Run `npm run check:all`.
-5. Use the final version in release notes, issue closeout, and pull request summary.
+5. Use the final version in release notes, issue closeout and pull request summary.

@@ -22,9 +22,17 @@ export default function StoryResult({ story, onStoryChange }: Props) {
     saveEdit,
     setDraftField,
     setDraftEncounterField,
+    setDraftEncounterCheckField,
+    setDraftEncounterCreatureField,
+    setDraftEncounterPuzzleField,
+    setDraftEncounterPuzzleListItem,
     setDraftNpcField,
     deleteStoryItem,
     getEncounterErrorKey,
+    getEncounterCheckErrorKey,
+    getEncounterCreatureErrorKey,
+    getEncounterPuzzleErrorKey,
+    getEncounterPuzzleListErrorKey,
     getNpcErrorKey,
   } = useStoryEditing(story, onStoryChange);
 
@@ -106,10 +114,38 @@ export default function StoryResult({ story, onStoryChange }: Props) {
                   title: fieldErrors[getEncounterErrorKey(index, "title")],
                   content: fieldErrors[getEncounterErrorKey(index, "content")],
                 }}
+                fieldErrors={fieldErrors}
+                encounterIndex={index}
+                getCheckErrorKey={getEncounterCheckErrorKey}
+                getCreatureErrorKey={getEncounterCreatureErrorKey}
+                getPuzzleErrorKey={getEncounterPuzzleErrorKey}
+                getPuzzleListErrorKey={getEncounterPuzzleListErrorKey}
                 isEditing={isEditing(key)}
                 onStartEdit={() => startEdit(key)}
                 onFieldChange={(field, value) => {
                   setDraftEncounterField(index, field, value);
+                }}
+                onCheckFieldChange={(checkIndex, field, value) => {
+                  setDraftEncounterCheckField(index, checkIndex, field, value);
+                }}
+                onCreatureFieldChange={(creatureIndex, field, value) => {
+                  setDraftEncounterCreatureField(
+                    index,
+                    creatureIndex,
+                    field,
+                    value,
+                  );
+                }}
+                onPuzzleFieldChange={(field, value) => {
+                  setDraftEncounterPuzzleField(index, field, value);
+                }}
+                onPuzzleListItemChange={(field, itemIndex, value) => {
+                  setDraftEncounterPuzzleListItem(
+                    index,
+                    field,
+                    itemIndex,
+                    value,
+                  );
                 }}
                 onDelete={() => deleteStoryItem("encounters", index)}
                 onSave={saveEdit}

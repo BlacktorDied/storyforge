@@ -1,6 +1,6 @@
 import jsPDF from "jspdf";
 
-import type { ParsedStory } from "./types";
+import type { ParsedEncounter, ParsedStory } from "./types";
 
 // =========================================================================
 // Types
@@ -221,6 +221,60 @@ function drawBodyText(s: RenderState, text: string): void {
 // Export
 // =========================================================================
 
+function getEncounterDetailSections(encounter: ParsedEncounter): CardSection[] {
+  const sections: CardSection[] = [];
+
+  if (encounter.checks.length > 0) {
+    sections.push({
+      text:
+        "Checks\n" +
+        encounter.checks
+          .map((check) => {
+            const label = [
+              check.type,
+              check.ability,
+              check.skillOrTool ? `(${check.skillOrTool})` : "",
+              `DC ${check.dc}`,
+            ]
+              .filter(Boolean)
+              .join(" ");
+
+            return `${label}: ${check.purpose}\nSuccess: ${check.success}\nFailure: ${check.failure}`;
+          })
+          .join("\n\n"),
+      size: FONT.size.md,
+    });
+  }
+
+  if (encounter.creatures.length > 0) {
+    sections.push({
+      text:
+        "Creatures / Stat Blocks\n" +
+        encounter.creatures
+          .map(
+            (creature) =>
+              `${creature.quantity} x ${creature.name} - ${creature.role}\nTrigger: ${creature.combatTrigger}\nGoal: ${creature.goal}`,
+          )
+          .join("\n\n"),
+      size: FONT.size.md,
+    });
+  }
+
+  if (encounter.puzzle) {
+    sections.push({
+      text:
+        `Puzzle: ${encounter.puzzle.type}\n` +
+        `${encounter.puzzle.prompt}\n` +
+        `Answer: ${encounter.puzzle.answer}\n` +
+        `Hints: ${encounter.puzzle.hints.join("; ")}\n` +
+        `Alternate solutions: ${encounter.puzzle.alternateSolutions.join("; ")}`,
+      size: FONT.size.md,
+    });
+  }
+
+  return sections;
+}
+
 export function exportStoryToPdf(story: ParsedStory): void {
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   const s: RenderState = { doc, y: MARGIN };
@@ -282,6 +336,7 @@ export function exportStoryToPdf(story: ParsedStory): void {
             text: encounter.content,
             size: FONT.size.md,
           },
+          ...getEncounterDetailSections(encounter),
         ],
       });
     });

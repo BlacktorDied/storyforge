@@ -1,79 +1,38 @@
 import {
   CLASSES,
+  EMOTIONAL_TONE_OPTIONS,
   ENCOUNTER_COUNT_BY_SESSION_LENGTH,
+  GAMEPLAY_THEME_OPTIONS,
+  NARRATIVE_ARCHETYPE_OPTIONS,
+  NARRATIVE_PACING_OPTIONS,
   RACES,
+  type EmotionalTone,
+  type GameplayTheme,
+  type NarrativeArchetype,
+  type NarrativePacing,
   type SessionLength,
 } from "./data";
-
-// ---------------------------------------------------------------------------
-// Narrative diversity pools
-// Each pool is randomly sampled at call time so identical inputs produce
-// structurally different adventures on every generation.
-// ---------------------------------------------------------------------------
-
-const NARRATIVE_ARCHETYPES = [
-  "mystery investigation — the party uncovers hidden truths through clues and interrogation",
-  "heist or infiltration — the party must achieve an objective through stealth, planning or deception",
-  "survival or escape — the party is trapped, hunted or must survive against overwhelming odds",
-  "rescue mission — the party must locate and free someone under threat or captivity",
-  "political intrigue — the party navigates competing factions, loyalty and hidden agendas",
-  "monster hunt — the party tracks and confronts a dangerous creature threatening a community",
-  "ancient ruins exploration — the party navigates a forgotten place with its own buried history",
-  "faction conflict — the party is caught between two powers and must choose sides or broker peace",
-  "curse or corruption — the party must lift a supernatural affliction from a place or person",
-  "criminal underworld — the party operates in a world of crime, deception and moral ambiguity",
-  "lost expedition — the party must uncover what happened to those who disappeared before them",
-  "haunting resolution — restoring peace to a place tormented by an unresolved past",
-  "competition or tournament — the party competes in a high-stakes contest with hidden dangers",
-  "rebellion support — the party aids an uprising against an oppressive power",
-  "escort or protection — the party must safely guide someone or something through danger",
-];
-
-const EMOTIONAL_TONES = [
-  "grim and foreboding — a world where hope is scarce and danger lurks in every shadow",
-  "hopeful and heroic — ordinary people rising to become heroes against overwhelming odds",
-  "dark comedy — absurd situations with real consequences, levity threading through danger",
-  "tragic and melancholic — a story shaped by loss, sacrifice and bittersweet outcomes",
-  "mysterious and unsettling — something is deeply wrong and the truth is stranger than expected",
-  "epic and grand — world-shaking stakes, legendary deeds and the weight of history",
-  "tense and paranoid — trust is scarce, betrayal is possible and danger wears a friendly face",
-  "whimsical and fantastical — strange magic, unusual creatures and genuine wonder",
-  "gritty and grounded — harsh realities, human cost and moral complexity without easy answers",
-  "dreamlike and surreal — shifting reality, unreliable perception and impossible things",
-];
-
-const GAMEPLAY_THEMES = [
-  "exploration-focused — discovering hidden places, environmental secrets and world-building through space",
-  "social intrigue — NPC relationships, information extraction and political maneuvering",
-  "puzzle-solving — environmental and intellectual challenges that reward creative thinking",
-  "tactical combat — strategic encounters with positioning, terrain and unexpected complications",
-  "investigation — gathering clues, following leads and piecing together hidden truths",
-  "moral dilemmas — hard choices without clear right answers and meaningful consequences for each",
-  "stealth and deception — infiltration, disguise and avoiding direct confrontation",
-  "time pressure — a ticking clock where every choice consumes a limited resource",
-  "resource scarcity — survival under pressure with limited supplies and environmental threats",
-  "negotiation and diplomacy — resolving conflict through words, deals and difficult compromise",
-];
-
-const NARRATIVE_PACING = [
-  "slow-burn — a quiet, eerie opening that gradually builds to an explosive climax",
-  "fast-paced — immediate action from the start, constant pressure with no time to breathe",
-  "escalating dread — a calm beginning that becomes increasingly desperate as the truth emerges",
-  "peaks and valleys — intense moments alternating with brief recovery and discovery",
-  "flashpoint structure — explosive opening incident, followed by investigation and final confrontation",
-  "single-act crisis — one continuous emergency that forces constant improvisation and adaptation",
-  "three-act tension arc — setup establishing stakes, rising conflict, climactic confrontation",
-];
+import { encounterCheckTypes, encounterPuzzleTypes } from "./types";
 
 const CLIMAX_TYPES = [
-  "direct confrontation — final combat with the main antagonist or most dangerous threat",
-  "social resolution — a negotiation, ultimatum or persuasion that ends the conflict without requiring violence",
-  "environmental mechanism — activating, disabling or surviving a trap, ritual or magical device at a critical moment",
-  "moral dilemma — a final choice with no clean answer where the cost of victory is real and felt",
-  "trickery and deception — the party must deceive, impersonate or outsmart rather than overpower",
-  "sacrifice — resolution requires giving something up permanently: a bond, an object or a life",
-  "puzzle or revelation — the climax unlocks only when the party understands something hidden throughout",
-  "chase and escape — survival over victory: getting out rather than defeating the threat",
+  "direct confrontation - final combat with the main antagonist or most dangerous threat",
+  "social resolution - a negotiation, ultimatum or persuasion that ends the conflict without requiring violence",
+  "environmental mechanism - activating, disabling or surviving a trap, ritual or magical device at a critical moment",
+  "moral dilemma - a final choice with no clean answer where the cost of victory is real and felt",
+  "trickery and deception - the party must deceive, impersonate or outsmart rather than overpower",
+  "sacrifice - resolution requires giving something up permanently: a bond, an object or a life",
+  "puzzle or revelation - the climax unlocks only when the party understands something hidden throughout",
+  "chase and escape - survival over victory: getting out rather than defeating the threat",
+];
+
+const STORY_FLOW_STRUCTURES = [
+  "branching investigation - each encounter reveals a clue that can point to two different next steps",
+  "rising complications - each encounter solves one problem while introducing a sharper consequence",
+  "faction pressure - each encounter shifts the balance between rival groups and forces visible choices",
+  "countdown crisis - each encounter consumes time or resources as the climax draws closer",
+  "location journey - each encounter moves the party through a distinct place with its own obstacle",
+  "reversal chain - each encounter changes what the party believes about the true threat",
+  "parallel threats - each encounter addresses a different pressure that converges in the climax",
 ];
 
 const LOCATION_INSPIRATIONS = [
@@ -95,11 +54,11 @@ const LOCATION_INSPIRATIONS = [
 ];
 
 const ANTI_TROPES = [
-  "Do not use a generic dungeon crawl format — the adventure must not primarily take place in a series of underground rooms with monsters behind every door",
+  "Do not use a generic dungeon crawl format - the adventure must not primarily take place in a series of underground rooms with monsters behind every door",
   "Do not use an evil wizard in a tower as the central threat",
   "Do not start the adventure in a tavern",
   "Do not use undead skeletons or zombie hordes as the primary enemies",
-  "Do not use a generic dark lord or evil overlord as the antagonist — the villain must have a specific name, face and motivation",
+  "Do not use a generic dark lord or evil overlord as the antagonist - the villain must have a specific name, face and motivation",
   "Do not use a village-under-attack as the inciting incident",
   "Do not use a generic 'retrieve the lost artifact' quest as the sole driving force",
   "Do not use a dragon as the final boss",
@@ -113,19 +72,106 @@ const ANTI_TROPES = [
 // Helpers
 // ---------------------------------------------------------------------------
 
-function pick<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
+export type SelectedNarrativeOptions = {
+  narrativeArchetype?: NarrativeArchetype | null;
+  emotionalTone?: EmotionalTone | null;
+  gameplayTheme?: GameplayTheme | null;
+  pacingStyle?: NarrativePacing | null;
+};
+
+type ResolvedNarrativeDirection = {
+  archetype: string;
+  tone: string;
+  theme: string;
+  pacing: string;
+  climax: string;
+  storyFlow: string;
+  locationInspiration: string;
+  antiTropes: string[];
+};
+
+type RandomNumber = () => number;
+
+function formatAllowedValues(values: readonly string[]): string {
+  return values.join(", ");
 }
 
-function pickMultiple<T>(arr: T[], count: number): T[] {
-  return [...arr].sort(() => Math.random() - 0.5).slice(0, count);
+function pick<T>(arr: readonly T[], random: RandomNumber): T {
+  return arr[Math.floor(random() * arr.length)];
+}
+
+function pickMultiple<T>(
+  arr: readonly T[],
+  count: number,
+  random: RandomNumber,
+): T[] {
+  const pool = [...arr];
+  const picked: T[] = [];
+
+  while (picked.length < count && pool.length > 0) {
+    const index = Math.floor(random() * pool.length);
+    const [item] = pool.splice(index, 1);
+    picked.push(item);
+  }
+
+  return picked;
+}
+
+function getSelectedOrRandomOption<T extends { value: string; prompt: string }>(
+  options: readonly T[],
+  value: T["value"] | null | undefined,
+  random: RandomNumber,
+): T {
+  if (value === null || value === undefined) {
+    return pick(options, random);
+  }
+
+  const option = options.find((item) => item.value === value);
+
+  if (!option) {
+    return pick(options, random);
+  }
+
+  return option;
+}
+
+export function buildResolvedNarrativeDirection(
+  selection: SelectedNarrativeOptions = {},
+  random: RandomNumber = Math.random,
+): ResolvedNarrativeDirection {
+  return {
+    archetype: getSelectedOrRandomOption(
+      NARRATIVE_ARCHETYPE_OPTIONS,
+      selection.narrativeArchetype,
+      random,
+    ).prompt,
+    tone: getSelectedOrRandomOption(
+      EMOTIONAL_TONE_OPTIONS,
+      selection.emotionalTone,
+      random,
+    ).prompt,
+    theme: getSelectedOrRandomOption(
+      GAMEPLAY_THEME_OPTIONS,
+      selection.gameplayTheme,
+      random,
+    ).prompt,
+    pacing: getSelectedOrRandomOption(
+      NARRATIVE_PACING_OPTIONS,
+      selection.pacingStyle,
+      random,
+    ).prompt,
+    climax: pick(CLIMAX_TYPES, random),
+    storyFlow: pick(STORY_FLOW_STRUCTURES, random),
+    locationInspiration: pick(LOCATION_INSPIRATIONS, random),
+    antiTropes: pickMultiple(ANTI_TROPES, 3, random),
+  };
 }
 
 // ---------------------------------------------------------------------------
 // Prompt builder
 // ---------------------------------------------------------------------------
 
-type BuildStoryPromptParams = {
+type BuildStoryPromptParams = SelectedNarrativeOptions & {
   genre: string;
   setting: string;
   races: readonly string[] | null;
@@ -133,6 +179,7 @@ type BuildStoryPromptParams = {
   sessionLength: SessionLength;
   partySize: string;
   level: string;
+  random?: RandomNumber;
 };
 
 export function buildStoryPrompt({
@@ -143,18 +190,28 @@ export function buildStoryPrompt({
   sessionLength,
   partySize,
   level,
+  random = Math.random,
+  narrativeArchetype,
+  emotionalTone,
+  gameplayTheme,
+  pacingStyle,
 }: BuildStoryPromptParams) {
   const usedRaces = races === null ? RACES : races;
   const usedClasses = classes === null ? CLASSES : classes;
   const encounterCount = ENCOUNTER_COUNT_BY_SESSION_LENGTH[sessionLength];
-
-  const archetype = pick(NARRATIVE_ARCHETYPES);
-  const tone = pick(EMOTIONAL_TONES);
-  const theme = pick(GAMEPLAY_THEMES);
-  const pacing = pick(NARRATIVE_PACING);
-  const climax = pick(CLIMAX_TYPES);
-  const locationInspiration = pick(LOCATION_INSPIRATIONS);
-  const antiTropes = pickMultiple(ANTI_TROPES, 3);
+  const allowedRaces = formatAllowedValues(usedRaces);
+  const allowedClasses = formatAllowedValues(usedClasses);
+  const allowedCheckTypes = formatAllowedValues(encounterCheckTypes);
+  const allowedPuzzleTypes = formatAllowedValues(encounterPuzzleTypes);
+  const direction = buildResolvedNarrativeDirection(
+    {
+      narrativeArchetype,
+      emotionalTone,
+      gameplayTheme,
+      pacingStyle,
+    },
+    random,
+  );
 
   return `Create a structured one-shot D&D 5e adventure using these parameters:
 
@@ -164,45 +221,61 @@ Party size: ${partySize} players
 Recommended player level: ${level}
 Session length: ${sessionLength}
 
-Allowed races: ${usedRaces.join(", ")}
-Allowed classes: ${usedClasses.join(", ")}
+Allowed races: ${allowedRaces}
+Allowed classes: ${allowedClasses}
 
 --- NARRATIVE DIRECTION ---
 
-Archetype: ${archetype}
-Emotional tone: ${tone}
-Gameplay theme: ${theme}
-Pacing: ${pacing}
-Climax type: ${climax}
-Location inspiration: Use "${locationInspiration}" as a creative starting point. Adapt it freely to fit the genre and setting — it is a suggestion, not a constraint.
+Archetype: ${direction.archetype}
+Emotional tone: ${direction.tone}
+Gameplay theme: ${direction.theme}
+Pacing: ${direction.pacing}
+Story flow: ${direction.storyFlow}
+Climax type: ${direction.climax}
+Location inspiration: Use "${direction.locationInspiration}" as a creative starting point. Adapt it freely to fit the genre and setting - it is a suggestion, not a constraint.
 
 --- ANTI-REPETITION DIRECTIVES (follow all of these strictly) ---
 
-${antiTropes.map((d) => `- ${d}`).join("\n")}
+${direction.antiTropes.map((d) => `- ${d}`).join("\n")}
 
 --- STORY CONTENT REQUIREMENTS ---
 
 - Title: Write a specific, evocative title that reflects the archetype, tone and setting. Avoid generic fantasy titles like "The Dark Dungeon" or "Quest for the Ancient Relic".
-- Background: Write at least 3 sentences establishing the history, lore and stakes of this specific adventure. Be specific — name locations, factions or events that make this world feel real.
+- Background: Write at least 3 sentences establishing the history, lore and stakes of this specific adventure. Be specific - name locations, factions or events that make this world feel real.
 - Adventure hook: Write a specific, immediate and emotionally engaging hook that draws the party in. It must create urgency and raise a clear question or problem.
 - Main quest: Clearly describe what the party must accomplish, why it matters, what opposing forces stand in the way and what is at stake if they fail.
-- NPCs: Each NPC must feel distinct. Give each one a specific name, a personality quirk visible in their behavior, and a motivation tied directly to the story's central conflict. Do not give two NPCs similar roles or functions in the story.
+- NPCs: Each NPC must feel distinct. Give each one a specific name, a personality quirk visible in their behavior and a motivation tied directly to the story's central conflict. Do not give two NPCs similar roles or functions in the story.
 
 --- ENCOUNTER REQUIREMENTS ---
 
 - Generate exactly ${encounterCount} encounters
-- Vary encounter types — do not default to combat only
+- Vary encounter types - do not default to combat only
 - Mix types from: combat, social negotiation, environmental puzzle, exploration, roleplay challenge, environmental hazard
 - The final encounter MUST be the climax and match the climax type specified above
 - Each encounter must contain at least one playable element
-- If an encounter includes a puzzle, riddle or challenge, provide its full content inline
+- Put every ability check, skill check, tool check or saving throw in the encounter's "checks" array
+- Check type MUST be one of: ${allowedCheckTypes}
+- Every check MUST include a numeric DC appropriate for level ${level}; never write a check like "Wisdom" or "Dexterity" without a DC
+- If an encounter includes combat or can turn into combat, put each opposing creature in the encounter's "creatures" array with its exact official name, quantity, role, combat trigger and goal
+- Creature names MUST be exact official D&D 5e creature/stat block names that a DM can look up in trusted references such as Monster Manual or D&D Beyond, not vague invented labels
+- Creature quantity MUST be a number of creatures, not part of the creature name
+- Do not include creature sources or reproduce stat blocks in the JSON output
+- Avoid vague creatures like "phantom wolves", "vengeful shadows" or "angry spirits" unless you map them to exact official stat block names
+- If an encounter includes a puzzle, riddle or clue challenge, put its full content in the encounter's "puzzle" object with type, prompt, answer, hints and alternateSolutions
+- Puzzle type MUST be one of: ${allowedPuzzleTypes}
+- Riddles must be original, specific to the adventure's scene and not reused across encounters
+- Do NOT use common stock riddles, especially "I can be cracked, made, told, and played. What am I?"
+- Each encounter should support at least two resolution strategies when possible, such as negotiation, stealth, combat, investigation, puzzle-solving or retreat
+- Encounters must follow the story flow specified above instead of repeating the same challenge structure
 - Encounters must escalate in stakes and tension toward the climax
+- Each encounter must have a distinct narrative function, obstacle type and consequence
+- NPCs and encounters must not reuse the same archetype, role or conflict pattern
 
 --- GLOBAL CONSTRAINTS ---
 
 - Do NOT invent new races or classes
-- NPCs MUST use ONLY races from the allowed list: ${usedRaces.join(", ")}
-- NPCs MUST use ONLY classes from the allowed list: ${usedClasses.join(", ")}
+- NPCs MUST use ONLY races from the allowed list: ${allowedRaces}
+- NPCs MUST use ONLY classes from the allowed list: ${allowedClasses}
 - The adventure must be appropriate for party size (${partySize}) and character level (${level})
 
 --- OUTPUT FORMAT (VERY IMPORTANT) ---
@@ -212,6 +285,8 @@ ${antiTropes.map((d) => `- ${d}`).join("\n")}
 - Do NOT include explanations or comments
 - All fields are required
 - Encounters and NPCs must be arrays
+- Use [] for "checks" or "creatures" when none apply
+- Use null for "puzzle" when an encounter has no puzzle, riddle or clue challenge
 
 Use this exact JSON structure:
 
@@ -224,7 +299,34 @@ Use this exact JSON structure:
   "encounters": [
     {
       "title": "string",
-      "content": "string"
+      "content": "string",
+      "checks": [
+        {
+          "type": "ability check",
+          "ability": "string",
+          "skillOrTool": "string",
+          "dc": 15,
+          "purpose": "string",
+          "success": "string",
+          "failure": "string"
+        }
+      ],
+      "creatures": [
+        {
+          "name": "exact official D&D 5e creature/stat block name",
+          "quantity": 1,
+          "role": "string",
+          "combatTrigger": "string",
+          "goal": "string"
+        }
+      ],
+      "puzzle": {
+        "type": "environmental puzzle",
+        "prompt": "string",
+        "answer": "string",
+        "hints": ["string"],
+        "alternateSolutions": ["string"]
+      }
     }
   ],
   "npcs": [

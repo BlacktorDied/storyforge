@@ -12,29 +12,29 @@
 
 ### DRY
 
-DRY means **Don't Repeat Yourself**. A shared rule, field list, validation rule, parser rule, or transform lives in one source of truth and is imported by the files that need it.
+DRY means **Don't Repeat Yourself**. A shared rule, field list, validation rule, parser rule or transform lives in one source of truth and is imported by the files that need it.
 
 ### KISS
 
-KISS means **Keep It Simple, Stupid**. StoryForge uses plain TypeScript modules, React components, and custom hooks instead of adding architecture layers that do not serve the current thesis-sized application.
+KISS means **Keep It Simple, Stupid**. StoryForge uses plain TypeScript modules, React components and custom hooks instead of adding architecture layers that do not serve the current thesis-sized application.
 
 ### Do One Thing
 
-Do One Thing means each file or function has one primary responsibility. For example, a component renders UI, a hook coordinates workflow state, a parser converts raw input into trusted data, and a validator checks whether values follow rules.
+Do One Thing means each file or function has one primary responsibility. For example, a component renders UI, a hook coordinates workflow state, a parser converts raw input into trusted data and a validator checks whether values follow rules.
 
 ### SOLID
 
-SOLID means **Single Responsibility**, **Open/Closed**, **Liskov Substitution**, **Interface Segregation**, and **Dependency Inversion**.
+SOLID means **Single Responsibility**, **Open/Closed**, **Liskov Substitution**, **Interface Segregation** and **Dependency Inversion**.
 
-- **Single Responsibility:** a module, component, hook, or function has one clear reason to change.
+- **Single Responsibility:** a module, component, hook or function has one clear reason to change.
 - **Open/Closed:** behavior is extended through focused definitions and helpers instead of rewriting unrelated consumers.
-- **Liskov Substitution:** shared types stay consistent so a `ParsedStory`, `ParsedEncounter`, or `ParsedNpc` can be used safely wherever that type is expected.
+- **Liskov Substitution:** shared types stay consistent so a `ParsedStory`, `ParsedEncounter` or `ParsedNpc` can be used safely wherever that type is expected.
 - **Interface Segregation:** components and hooks receive focused props and helper functions instead of broad objects with unrelated responsibilities.
 - **Dependency Inversion:** UI and workflow code depend on typed shared helpers from `lib/`, while domain rules stay independent from React components.
 
 ### Meaningful Names
 
-Meaningful Names means files, types, variables, and functions describe their role clearly. Examples include `ParsedStory`, `buildStoryPrompt`, `parseStory`, `validateStoryEdit`, `trimStory`, and `useStoryEditing`.
+Meaningful Names means files, types, variables and functions describe their role clearly. Examples include `ParsedStory`, `buildStoryPrompt`, `parseStory`, `validateStoryEdit`, `trimStory` and `useStoryEditing`.
 
 ## React And UI Terms
 
@@ -60,7 +60,7 @@ Official docs: [Passing Props to a Component](https://react.dev/learn/passing-pr
 <StoryResult story={parsedStory} onStoryChange={setParsedStory} />
 ```
 
-In this example, `story` gives the child data to display, and `onStoryChange` gives the child a way to report a story update.
+In this example, `story` gives the child data to display and `onStoryChange` gives the child a way to report a story update.
 
 ### State
 
@@ -87,7 +87,7 @@ Examples:
 
 ### Client Component
 
-A client component is a React component that runs in the browser and can use client-side hooks such as `useState`, `useEffect`, and custom hooks. In Next.js, it starts with `"use client"`.
+A client component is a React component that runs in the browser and can use client-side hooks such as `useState`, `useEffect` and custom hooks. In Next.js, it starts with `"use client"`.
 
 Official docs: [Server and Client Components](https://nextjs.org/docs/app/getting-started/server-and-client-components)
 
@@ -111,7 +111,7 @@ Use `onSomething` for action callbacks. An action callback reports that an event
 <StoryForm onGenerate={handleGenerate} />
 ```
 
-`onGenerate` means the form can request generation. `StoryForm` does not need to know whether generation calls an API, uses mock data, sets loading state, or parses a response.
+`onGenerate` means the form can request generation. `StoryForm` does not need to know whether generation calls an API, uses mock data, sets loading state or parses a response.
 
 Use `onSomethingChange` as a specific kind of callback prop for controlled value updates. A change callback reports the next value for one specific prop.
 
@@ -156,12 +156,12 @@ Use `setSomething` in the component or hook that owns the state. When passing th
 
 ### Function Ownership
 
-The owner of a function is the component, hook, or module that has the context needed to complete the behavior.
+The owner of a function is the component, hook or module that has the context needed to complete the behavior.
 
 Common ownership rules:
 
 - State setter ownership belongs to the component or hook that calls `useState`.
-- Workflow handler ownership belongs to the component or hook that can validate data, call APIs, update loading state, and handle errors.
+- Workflow handler ownership belongs to the component or hook that can validate data, call APIs, update loading state and handle errors.
 - Domain helper ownership belongs in `lib/` when the logic does not depend on React rendering.
 - Child UI components receive callbacks through `onSomething` or `onSomethingChange` props and call them without knowing the parent implementation.
 
@@ -223,7 +223,7 @@ Official docs: [TypeScript Object Types](https://www.typescriptlang.org/docs/han
 
 ### Parser
 
-A parser converts raw input into a trusted application shape. In StoryForge, `parseStory` receives raw AI text, parses JSON, checks the story structure, trims strings, and returns a `ParsedStory`.
+A parser converts raw input into a trusted application shape. In StoryForge, `parseStory` receives raw AI text, parses JSON, checks the story structure, trims strings and returns a `ParsedStory`.
 
 Official docs: [JSON.parse on MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse)
 
@@ -241,17 +241,17 @@ A draft is an editable copy of a story. It lets the user change text in the UI b
 
 ### Field Error Key
 
-A field error key identifies which UI field owns a validation message. Examples include `title`, `encounters.0.title`, and `npcs.1.description`.
+A field error key identifies which UI field owns a validation message. Examples include `title`, `encounters.0.title` and `npcs.1.description`.
 
 ### Story Field Definition
 
-A story field definition is a shared field list used by parsing, validation, transforms, and editing logic. Keeping these fields centralized avoids disagreement between modules.
+A story field definition is a shared field list used by parsing, validation, transforms and editing logic. Keeping these fields centralized avoids disagreement between modules.
 
 ## Project Structure Terms
 
 ### `app/`
 
-`app/` contains Next.js App Router routes, layouts, pages, metadata, and API route files.
+`app/` contains Next.js App Router routes, layouts, pages, metadata and API route files.
 
 Official docs: [Next.js App Router](https://nextjs.org/docs/app)
 
@@ -267,7 +267,7 @@ Official docs: [React Components](https://react.dev/learn/your-first-component)
 
 ### `components/story/`
 
-`components/story/` contains UI components that only make sense for generated stories, such as story results, encounter cards, NPC cards, and story editing controls.
+`components/story/` contains UI components that only make sense for generated stories, such as story results, encounter cards, NPC cards and story editing controls.
 
 ### `hooks/`
 
@@ -277,7 +277,7 @@ Official docs: [Reusing Logic with Custom Hooks](https://react.dev/learn/reusing
 
 ### `lib/`
 
-`lib/` contains shared domain logic, types, constants, validation, parsing, transforms, prompts, and export helpers.
+`lib/` contains shared domain logic, types, constants, validation, parsing, transforms, prompts and export helpers.
 
 ### `tests/`
 
@@ -287,4 +287,4 @@ Official docs: [Next.js Testing](https://nextjs.org/docs/app/guides/testing)
 
 ### `docs/`
 
-`docs/` contains project documentation such as architecture notes, glossary entries, and implementation guides.
+`docs/` contains project documentation such as architecture notes, glossary entries and implementation guides.

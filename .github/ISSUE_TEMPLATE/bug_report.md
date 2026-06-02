@@ -37,4 +37,4 @@ Usually `patch` for confirmed bugs. Use `major` or `minor` only if the fix chang
 
 ## Notes
 
-Screenshots, logs, or extra details.
+Screenshots, logs or extra details.

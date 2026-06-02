@@ -20,18 +20,21 @@ const validNpc = {
 const validEncounter = {
   title: "The Silent Village",
   content:
-    "The party arrives to find the village eerily quiet - doors hang open, fires are cold, and no one answers calls.",
+    "The party arrives to find the village eerily quiet - doors hang open, fires are cold and no one answers calls.",
+  checks: [],
+  creatures: [],
+  puzzle: null,
 };
 
 const validStoryObject: ParsedStory = {
   title: "The Cursed Mill",
   setting: "A fog-covered marshland village",
   background:
-    "Three years ago, a local miller made a pact with a river spirit to ensure a bountiful harvest. The spirit kept its end of the bargain - but the cost grows each season. Now villagers vanish without a trace, and the miller refuses to speak of it.",
+    "Three years ago, a local miller made a pact with a river spirit to ensure a bountiful harvest. The spirit kept its end of the bargain - but the cost grows each season. Now villagers vanish without a trace and the miller refuses to speak of it.",
   adventureHook:
-    "A merchant's cart is found abandoned on the road outside Ashfen - the horse still harnessed, the cargo untouched, and a single muddy trail leading toward the old mill.",
+    "A merchant's cart is found abandoned on the road outside Ashfen - the horse still harnessed, the cargo untouched and a single muddy trail leading toward the old mill.",
   mainQuest:
-    "The party must uncover the nature of the pact, confront the river spirit at the mill, and break the curse before the next full moon or another family disappears.",
+    "The party must uncover the nature of the pact, confront the river spirit at the mill and break the curse before the next full moon or another family disappears.",
   encounters: [validEncounter],
   npcs: [validNpc],
 };
@@ -56,6 +59,33 @@ describe("parseStory", () => {
           {
             title: "  The Silent Village  ",
             content: "  The party arrives to find the village quiet.  ",
+            checks: [
+              {
+                type: "ability check",
+                ability: "  Wisdom  ",
+                skillOrTool: "  Perception  ",
+                dc: 13,
+                purpose: "  Notice hidden tracks.  ",
+                success: "  The tracks point to the mill.  ",
+                failure: "  The party loses time.  ",
+              },
+            ],
+            creatures: [
+              {
+                name: "  Wolf  ",
+                quantity: 2,
+                role: "  Scout  ",
+                combatTrigger: "  The party threatens the pack.  ",
+                goal: "  Drive intruders away.  ",
+              },
+            ],
+            puzzle: {
+              type: "clue challenge",
+              prompt: "  Match the muddy bootprints to the mill door.  ",
+              answer: "  The miller left them.  ",
+              hints: ["  Fresh mud points north.  "],
+              alternateSolutions: ["  Ask Mira about the prints.  "],
+            },
           },
         ],
         npcs: [
@@ -73,6 +103,13 @@ describe("parseStory", () => {
       expect(result.encounters[0].title).toBe("The Silent Village");
       expect(result.encounters[0].content).toBe(
         "The party arrives to find the village quiet.",
+      );
+      expect(result.encounters[0].checks[0].ability).toBe("Wisdom");
+      expect(result.encounters[0].checks[0].skillOrTool).toBe("Perception");
+      expect(result.encounters[0].creatures[0].name).toBe("Wolf");
+      expect(result.encounters[0].creatures[0].quantity).toBe(2);
+      expect(result.encounters[0].puzzle?.prompt).toBe(
+        "Match the muddy bootprints to the mill door.",
       );
       expect(result.npcs[0].name).toBe("Mira Ashvale");
       expect(result.npcs[0].description).toBe("A sharp-eyed woman.");
@@ -165,10 +202,117 @@ describe("parseStory", () => {
     it("rejects an encounter with whitespace-only content", () => {
       const broken = {
         ...validStoryObject,
-        encounters: [{ title: validEncounter.title, content: "   " }],
+        encounters: [{ ...validEncounter, content: "   " }],
       };
 
       expect(() => parseStory(JSON.stringify(broken))).toThrow();
+    });
+
+    it("rejects an encounter without structured detail fields", () => {
+      const broken = {
+        ...validStoryObject,
+        encounters: [
+          {
+            title: "The Silent Village",
+            content: "The party arrives to find the village quiet.",
+          },
+        ],
+      };
+
+      expect(() => parseStory(JSON.stringify(broken))).toThrow();
+    });
+
+    it("rejects an encounter without a puzzle field", () => {
+      const broken = {
+        ...validStoryObject,
+        encounters: [
+          {
+            title: "The Silent Village",
+            content: "The party arrives to find the village quiet.",
+            checks: [],
+            creatures: [],
+          },
+        ],
+      };
+
+      expect(() => parseStory(JSON.stringify(broken))).toThrow();
+    });
+
+    it("drops a structured check without a numeric DC", () => {
+      const broken = {
+        ...validStoryObject,
+        encounters: [
+          {
+            ...validEncounter,
+            checks: [
+              {
+                type: "ability check",
+                ability: "Wisdom",
+                purpose: "Notice the threat.",
+                success: "The party acts first.",
+                failure: "The threat surprises them.",
+              },
+            ],
+          },
+        ],
+      };
+
+      const result = parseStory(JSON.stringify(broken));
+
+      expect(result.encounters[0].checks).toEqual([]);
+    });
+
+    it("accepts structured creatures without source metadata", () => {
+      const story = {
+        ...validStoryObject,
+        encounters: [
+          {
+            ...validEncounter,
+            creatures: [
+              {
+                name: "Wolf",
+                quantity: 3,
+                role: "Threat",
+                combatTrigger: "The party attacks.",
+                goal: "Defend its den.",
+              },
+            ],
+          },
+        ],
+      };
+
+      const result = parseStory(JSON.stringify(story));
+
+      expect(result.encounters[0].creatures[0]).toEqual({
+        name: "Wolf",
+        quantity: 3,
+        role: "Threat",
+        combatTrigger: "The party attacks.",
+        goal: "Defend its den.",
+      });
+    });
+
+    it("drops structured creatures without quantity", () => {
+      const story = {
+        ...validStoryObject,
+        encounters: [
+          {
+            ...validEncounter,
+            creatures: [
+              {
+                name: "Wolf",
+                role: "Threat",
+                combatTrigger: "The party attacks.",
+                goal: "Defend its den.",
+              },
+            ],
+          },
+        ],
+      };
+
+      const result = parseStory(JSON.stringify(story));
+
+      expect(result.encounters[0].creatures).toEqual([]);
     });
 
     it("rejects encounters that are not an array", () => {

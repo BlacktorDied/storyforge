@@ -1,12 +1,6 @@
-import {
-  isStoryTextField,
-  type StoryListField,
-  type StoryTextField,
-} from "@/lib/storyFields";
+import { isStoryTextField } from "@/lib/storyFields";
 import { trimEncounter, trimNpc } from "@/lib/storyTransforms";
 import type { ParsedStory } from "@/lib/types";
-
-export { isStoryTextField, type StoryListField, type StoryTextField };
 
 type ApplyStoryEditParams = {
   editingSection: string | null;
