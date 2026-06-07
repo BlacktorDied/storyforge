@@ -8,9 +8,9 @@
 ## Documentation List
 
 - [Application Structure](./application-structure.md): optimal folder and responsibility structure for the app.
-- [Glossary](./glossary.md): project terms, naming patterns, React terms, and official documentation links.
-- [Testing Guidelines](./testing.md): Vitest structure, grouping, naming, and coverage priorities.
-- [Versioning](./versioning.md): app version rules, GitHub issue version impact, and release version examples.
+- [Glossary](./glossary.md): project terms, naming patterns, React terms and official documentation links.
+- [Testing Guidelines](./testing.md): Vitest structure, grouping, naming and coverage priorities.
+- [Versioning](./versioning.md): app version rules, GitHub issue version impact and release version examples.
 
 ## Documentation Rules
 

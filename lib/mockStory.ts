@@ -10,10 +10,16 @@ export const MOCK_RESULT = JSON.stringify({
     {
       title: "Encounter 1: Test Encounter",
       content: "Test encounter content.",
+      checks: [],
+      creatures: [],
+      puzzle: null,
     },
     {
       title: "Encounter 2: Final Test Encounter",
       content: "Test final encounter content.",
+      checks: [],
+      creatures: [],
+      puzzle: null,
     },
   ],
   npcs: [

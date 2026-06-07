@@ -3,6 +3,7 @@
 import FieldError from "@/components/ui/FieldError";
 import TextareaField from "@/components/ui/TextareaField";
 import TextInput from "@/components/ui/TextInput";
+import type { NpcField } from "@/lib/storyFields";
 import type { ParsedNpc } from "@/lib/types";
 
 import DeleteButton from "./DeleteButton";
@@ -12,10 +13,10 @@ import SaveCancelBar from "./SaveCancelBar";
 type Props = {
   npc: ParsedNpc;
   draftNpc?: ParsedNpc;
-  errors?: Partial<Record<keyof ParsedNpc, string>>;
+  errors?: Partial<Record<NpcField, string>>;
   isEditing: boolean;
   onStartEdit: () => void;
-  onFieldChange: (field: keyof ParsedNpc, value: string) => void;
+  onFieldChange: (field: NpcField, value: string) => void;
   onDelete: () => void;
   onSave: () => void;
   onCancel: () => void;

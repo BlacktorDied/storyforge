@@ -2,22 +2,42 @@
 
 import { useState } from "react";
 
-import {
-  applyStoryEdit,
-  type StoryListField,
-  type StoryTextField,
-} from "@/lib/storyEditing";
+import { applyStoryEdit } from "@/lib/storyEditing";
 import { cloneStoryDraft } from "@/lib/storyTransforms";
-import type { ParsedEncounter, ParsedNpc, ParsedStory } from "@/lib/types";
+import type {
+  EncounterCheck,
+  EncounterCreature,
+  EncounterPuzzle,
+  ParsedEncounter,
+  ParsedStory,
+} from "@/lib/types";
 import {
+  getEncounterCheckErrorKey,
+  getEncounterCreatureErrorKey,
   getEncounterErrorKey,
+  getEncounterPuzzleErrorKey,
+  getEncounterPuzzleListErrorKey,
   getNpcErrorKey,
   type StoryFieldErrors,
-  validateEncounterField,
+  validateEncounterCheckField,
+  validateEncounterCreatureField,
+  validateEncounterPuzzleField,
+  validateEncounterPuzzleListItem,
+  validateEncounterTextField,
   validateNpcField,
   validateStoryEdit,
   validateStoryTextField,
 } from "@/lib/storyValidation";
+import type {
+  EncounterCheckField,
+  EncounterCreatureField,
+  EncounterPuzzleField,
+  EncounterPuzzleListField,
+  EncounterTextField,
+  NpcField,
+  StoryListField,
+  StoryTextField,
+} from "@/lib/storyFields";
 
 export function useStoryEditing(
   story: ParsedStory,
@@ -71,28 +91,118 @@ export function useStoryEditing(
     setDraft((currentDraft) => ({ ...currentDraft, [field]: value }));
   };
 
-  const setDraftEncounterField = (
-    index: number,
-    field: keyof ParsedEncounter,
-    value: string,
+  const updateDraftEncounter = (
+    encounterIndex: number,
+    updateEncounter: (encounter: ParsedEncounter) => ParsedEncounter,
   ) => {
-    validateField(
-      getEncounterErrorKey(index, field),
-      validateEncounterField(field, value),
-    );
     setDraft((currentDraft) => ({
       ...currentDraft,
-      encounters: currentDraft.encounters.map((encounter, encounterIndex) =>
-        encounterIndex === index ? { ...encounter, [field]: value } : encounter,
+      encounters: currentDraft.encounters.map((encounter, currentIndex) =>
+        currentIndex === encounterIndex
+          ? updateEncounter(encounter)
+          : encounter,
       ),
     }));
   };
 
-  const setDraftNpcField = (
+  const setDraftEncounterField = (
     index: number,
-    field: keyof ParsedNpc,
+    field: EncounterTextField,
     value: string,
   ) => {
+    validateField(
+      getEncounterErrorKey(index, field),
+      validateEncounterTextField(field, value),
+    );
+    updateDraftEncounter(index, (encounter) => ({
+      ...encounter,
+      [field]: value,
+    }));
+  };
+
+  const setDraftEncounterCheckField = <K extends EncounterCheckField>(
+    encounterIndex: number,
+    checkIndex: number,
+    field: K,
+    value: EncounterCheck[K],
+  ) => {
+    validateField(
+      getEncounterCheckErrorKey(encounterIndex, checkIndex, field),
+      validateEncounterCheckField(field, value),
+    );
+    updateDraftEncounter(encounterIndex, (encounter) => ({
+      ...encounter,
+      checks: encounter.checks.map((check, currentCheckIndex) =>
+        currentCheckIndex === checkIndex ? { ...check, [field]: value } : check,
+      ),
+    }));
+  };
+
+  const setDraftEncounterCreatureField = <K extends EncounterCreatureField>(
+    encounterIndex: number,
+    creatureIndex: number,
+    field: K,
+    value: EncounterCreature[K],
+  ) => {
+    validateField(
+      getEncounterCreatureErrorKey(encounterIndex, creatureIndex, field),
+      validateEncounterCreatureField(field, value),
+    );
+    updateDraftEncounter(encounterIndex, (encounter) => ({
+      ...encounter,
+      creatures: encounter.creatures.map((creature, currentCreatureIndex) =>
+        currentCreatureIndex === creatureIndex
+          ? { ...creature, [field]: value }
+          : creature,
+      ),
+    }));
+  };
+
+  const setDraftEncounterPuzzleField = <K extends EncounterPuzzleField>(
+    encounterIndex: number,
+    field: K,
+    value: EncounterPuzzle[K],
+  ) => {
+    validateField(
+      getEncounterPuzzleErrorKey(encounterIndex, field),
+      validateEncounterPuzzleField(field, value),
+    );
+    updateDraftEncounter(encounterIndex, (encounter) =>
+      encounter.puzzle
+        ? {
+            ...encounter,
+            puzzle: { ...encounter.puzzle, [field]: value },
+          }
+        : encounter,
+    );
+  };
+
+  const setDraftEncounterPuzzleListItem = (
+    encounterIndex: number,
+    field: EncounterPuzzleListField,
+    itemIndex: number,
+    value: string,
+  ) => {
+    validateField(
+      getEncounterPuzzleListErrorKey(encounterIndex, field, itemIndex),
+      validateEncounterPuzzleListItem(field, value),
+    );
+    updateDraftEncounter(encounterIndex, (encounter) =>
+      encounter.puzzle
+        ? {
+            ...encounter,
+            puzzle: {
+              ...encounter.puzzle,
+              [field]: encounter.puzzle[field].map((item, currentItemIndex) =>
+                currentItemIndex === itemIndex ? value : item,
+              ),
+            },
+          }
+        : encounter,
+    );
+  };
+
+  const setDraftNpcField = (index: number, field: NpcField, value: string) => {
     validateField(getNpcErrorKey(index, field), validateNpcField(field, value));
     setDraft((currentDraft) => ({
       ...currentDraft,
@@ -145,9 +255,17 @@ export function useStoryEditing(
     saveEdit,
     setDraftField,
     setDraftEncounterField,
+    setDraftEncounterCheckField,
+    setDraftEncounterCreatureField,
+    setDraftEncounterPuzzleField,
+    setDraftEncounterPuzzleListItem,
     setDraftNpcField,
     deleteStoryItem,
     getEncounterErrorKey,
+    getEncounterCheckErrorKey,
+    getEncounterCreatureErrorKey,
+    getEncounterPuzzleErrorKey,
+    getEncounterPuzzleListErrorKey,
     getNpcErrorKey,
   };
 }

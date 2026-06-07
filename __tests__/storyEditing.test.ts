@@ -19,11 +19,41 @@ const story: ParsedStory = {
   encounters: [
     {
       title: "The Silent Village",
-      content: "The party finds Ashfen quiet, cold, and watched.",
+      content: "The party finds Ashfen quiet, cold and watched.",
+      checks: [],
+      creatures: [],
+      puzzle: null,
     },
     {
       title: "The Old Mill",
       content: "The wheel turns against the river current.",
+      checks: [
+        {
+          type: "ability check",
+          ability: "Wisdom",
+          skillOrTool: "Perception",
+          dc: 13,
+          purpose: "Notice river water moving uphill.",
+          success: "The party finds the hidden sluice.",
+          failure: "The miller has time to prepare.",
+        },
+      ],
+      creatures: [
+        {
+          name: "Wolf",
+          quantity: 2,
+          role: "Scout",
+          combatTrigger: "The party threatens the pack.",
+          goal: "Drive intruders away.",
+        },
+      ],
+      puzzle: {
+        type: "clue challenge",
+        prompt: "Read the muddy trail.",
+        answer: "The miller passed here.",
+        hints: ["The mud is fresh."],
+        alternateSolutions: ["Ask Mira for help."],
+      },
     },
   ],
   npcs: [
@@ -91,7 +121,13 @@ describe("applyStoryEdit", () => {
       const draft: ParsedStory = {
         ...story,
         encounters: [
-          { title: "  The Empty Square  ", content: "  Lanterns gutter.  " },
+          {
+            title: "  The Empty Square  ",
+            content: "  Lanterns gutter.  ",
+            checks: [],
+            creatures: [],
+            puzzle: null,
+          },
           story.encounters[1],
         ],
       };
@@ -105,8 +141,81 @@ describe("applyStoryEdit", () => {
       expect(result.encounters[0]).toEqual({
         title: "The Empty Square",
         content: "Lanterns gutter.",
+        checks: [],
+        creatures: [],
+        puzzle: null,
       });
       expect(result.encounters[1]).toBe(story.encounters[1]);
+    });
+
+    it("applies and trims structured encounter detail edits", () => {
+      const draft: ParsedStory = {
+        ...story,
+        encounters: [
+          story.encounters[0],
+          {
+            ...story.encounters[1],
+            checks: [
+              {
+                type: "ability check",
+                ability: "  Intelligence  ",
+                skillOrTool: "  Investigation  ",
+                dc: 14,
+                purpose: "  Study the old mechanism.  ",
+                success: "  The party opens the sluice.  ",
+                failure: "  The wheel accelerates.  ",
+              },
+            ],
+            creatures: [
+              {
+                name: "  Giant Rat  ",
+                quantity: 3,
+                role: "  Swarm threat  ",
+                combatTrigger: "  The party enters the grain room.  ",
+                goal: "  Protect the nest.  ",
+              },
+            ],
+            puzzle: {
+              type: "logic puzzle",
+              prompt: "  Align the wheel marks.  ",
+              answer: "  Moon, river, mill.  ",
+              hints: ["  The moon mark is worn.  "],
+              alternateSolutions: ["  Force the wheel with tools.  "],
+            },
+          },
+        ],
+      };
+
+      const result = applyStoryEdit({
+        editingSection: "encounter-1",
+        story,
+        draft,
+      });
+
+      expect(result.encounters[1].checks[0]).toEqual({
+        type: "ability check",
+        ability: "Intelligence",
+        skillOrTool: "Investigation",
+        dc: 14,
+        purpose: "Study the old mechanism.",
+        success: "The party opens the sluice.",
+        failure: "The wheel accelerates.",
+      });
+      expect(result.encounters[1].creatures[0]).toEqual({
+        name: "Giant Rat",
+        quantity: 3,
+        role: "Swarm threat",
+        combatTrigger: "The party enters the grain room.",
+        goal: "Protect the nest.",
+      });
+      expect(result.encounters[1].puzzle).toEqual({
+        type: "logic puzzle",
+        prompt: "Align the wheel marks.",
+        answer: "Moon, river, mill.",
+        hints: ["The moon mark is worn."],
+        alternateSolutions: ["Force the wheel with tools."],
+      });
+      expect(result.encounters[0]).toBe(story.encounters[0]);
     });
 
     it("applies and trims an NPC edit without changing other NPCs", () => {
@@ -165,11 +274,43 @@ describe("applyStoryEdit", () => {
 
 describe("trimStory", () => {
   describe("valid input", () => {
-    it("trims story text, encounters, and NPCs", () => {
+    it("trims story text, encounters and NPCs", () => {
       const result = trimStory({
         ...story,
         title: "  The Cursed Mill  ",
-        encounters: [{ title: "  Title  ", content: "  Content  " }],
+        encounters: [
+          {
+            title: "  Title  ",
+            content: "  Content  ",
+            checks: [
+              {
+                type: "ability check",
+                ability: "  Wisdom  ",
+                skillOrTool: "  Perception  ",
+                dc: 13,
+                purpose: "  Find tracks.  ",
+                success: "  The party finds them.  ",
+                failure: "  The party loses time.  ",
+              },
+            ],
+            creatures: [
+              {
+                name: "  Wolf  ",
+                quantity: 2,
+                role: "  Scout  ",
+                combatTrigger: "  The party threatens it.  ",
+                goal: "  Drive the party away.  ",
+              },
+            ],
+            puzzle: {
+              type: "clue challenge",
+              prompt: "  Read the muddy trail.  ",
+              answer: "  The miller passed here.  ",
+              hints: ["  The mud is fresh.  "],
+              alternateSolutions: ["  Ask Mira for help.  "],
+            },
+          },
+        ],
         npcs: [
           {
             name: "  Name  ",
@@ -187,6 +328,33 @@ describe("trimStory", () => {
       expect(result.encounters[0]).toEqual({
         title: "Title",
         content: "Content",
+        checks: [
+          {
+            type: "ability check",
+            ability: "Wisdom",
+            skillOrTool: "Perception",
+            dc: 13,
+            purpose: "Find tracks.",
+            success: "The party finds them.",
+            failure: "The party loses time.",
+          },
+        ],
+        creatures: [
+          {
+            name: "Wolf",
+            quantity: 2,
+            role: "Scout",
+            combatTrigger: "The party threatens it.",
+            goal: "Drive the party away.",
+          },
+        ],
+        puzzle: {
+          type: "clue challenge",
+          prompt: "Read the muddy trail.",
+          answer: "The miller passed here.",
+          hints: ["The mud is fresh."],
+          alternateSolutions: ["Ask Mira for help."],
+        },
       });
       expect(result.npcs[0]).toEqual({
         name: "Name",
@@ -209,6 +377,20 @@ describe("cloneStoryDraft", () => {
       expect(draft).not.toBe(story);
       expect(draft.encounters).not.toBe(story.encounters);
       expect(draft.encounters[0]).not.toBe(story.encounters[0]);
+      expect(draft.encounters[1].checks).not.toBe(story.encounters[1].checks);
+      expect(draft.encounters[1].checks[0]).not.toBe(
+        story.encounters[1].checks[0],
+      );
+      expect(draft.encounters[1].creatures).not.toBe(
+        story.encounters[1].creatures,
+      );
+      expect(draft.encounters[1].creatures[0]).not.toBe(
+        story.encounters[1].creatures[0],
+      );
+      expect(draft.encounters[1].puzzle).not.toBe(story.encounters[1].puzzle);
+      expect(draft.encounters[1].puzzle?.hints).not.toBe(
+        story.encounters[1].puzzle?.hints,
+      );
       expect(draft.npcs).not.toBe(story.npcs);
       expect(draft.npcs[0]).not.toBe(story.npcs[0]);
     });

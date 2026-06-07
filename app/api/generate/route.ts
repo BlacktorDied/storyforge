@@ -52,7 +52,7 @@ export async function POST(req: Request) {
           content: prompt,
         },
       ],
-      temperature: 0.6,
+      temperature: 0.8,
     });
 
     const result = completion.choices[0].message.content ?? "";

@@ -1,6 +1,6 @@
 # StoryForge
 
-StoryForge is an AI-powered tabletop RPG adventure generator designed to help Game Masters quickly create structured adventures, encounters, locations, and NPCs for their campaigns.
+StoryForge is an AI-powered tabletop RPG adventure generator designed to help Game Masters quickly create structured adventures, encounters, locations and NPCs for their campaigns.
 
 The current version focuses on generating D&D-style adventures with configurable:
 
@@ -111,9 +111,9 @@ docs/                Project documentation
 
 StoryForge follows five lightweight architecture principles:
 
-- **DRY:** shared story fields, validation rules, parsing rules, and transforms live in `lib/`.
-- **KISS:** the app uses simple Next.js, React, hooks, and TypeScript modules.
-- **Do One Thing:** components render, hooks coordinate workflows, and `lib/` files hold domain rules.
+- **DRY:** shared story fields, validation rules, parsing rules and transforms live in `lib/`.
+- **KISS:** the app uses simple Next.js, React, hooks and TypeScript modules.
+- **Do One Thing:** components render, hooks coordinate workflows and `lib/` files hold domain rules.
 - **SOLID:** shared modules expose focused functions with typed inputs and outputs.
 - **Meaningful Names:** files and symbols describe their role in the story generation flow.
 

@@ -13,7 +13,7 @@
 
 ## Purpose
 
-StoryForge tests focus on reliability for parser behavior, validation rules, prompt consistency, and story editing helpers. Tests should stay lightweight, readable, and close to the domain logic they protect.
+StoryForge tests focus on reliability for parser behavior, validation rules, prompt consistency and story editing helpers. Tests should stay lightweight, readable and close to the domain logic they protect.
 
 ## Test Location
 
@@ -39,7 +39,7 @@ const validStory = {
 };
 ```
 
-After fixtures, organize tests by exported function:
+After fixtures organize tests by exported function:
 
 ```ts
 describe("functionName", () => {
@@ -67,8 +67,8 @@ describe("functionName", () => {
 
 - Use behavioral nested `describe()` blocks.
 - Each exported function should generally have its own top-level `describe()` block.
-- Group by behavior, such as `valid input`, `invalid input`, `format handling`, `edge cases`, `custom messages`, or `error ordering`.
-- Do not use comment sections for behavior groups, such as `Happy Path`, `Invalid Path`, `Edge Cases`, or `Error Cases`.
+- Group by behavior, such as `valid input`, `invalid input`, `format handling`, `edge cases`, `custom messages` or `error ordering`.
+- Do not use comment sections for behavior groups, such as `Happy Path`, `Invalid Path`, `Edge Cases` or `Error Cases`.
 - Remove comments when the surrounding `describe()` already explains the behavior.
 - Prefer consistent grouping across test files over local stylistic differences.
 
@@ -84,19 +84,19 @@ describe("functionName", () => {
 - Keep fixtures small but realistic for the StoryForge domain.
 - Reuse shared fixtures only when they make the test easier to read.
 - Use local overrides inside individual tests to make the tested behavior obvious.
-- Preserve strict TypeScript types for structured story fixtures with `ParsedStory`, `ParsedEncounter`, or `ParsedNpc` when useful.
+- Preserve strict TypeScript types for structured story fixtures with `ParsedStory`, `ParsedEncounter` or `ParsedNpc` when useful.
 
 ## Coverage Priorities
 
 Prioritize tests for:
 
 - AI response parsing and trimming behavior.
-- Required story, encounter, and NPC fields.
+- Required story, encounter and NPC fields.
 - Malformed or structurally invalid JSON responses.
 - Shared validation helpers.
 - Generation form validation.
 - Story editing validation and edit application.
-- Prompt builder consistency for schema keys, selected parameters, and encounter counts.
+- Prompt builder consistency for schema keys, selected parameters and encounter counts.
 
 Avoid broad infrastructure or UI-heavy tests unless they protect a thesis-relevant workflow.
 

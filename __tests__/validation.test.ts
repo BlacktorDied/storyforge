@@ -7,7 +7,7 @@ import {
 import {
   getEncounterErrorKey,
   getNpcErrorKey,
-  validateEncounterField,
+  validateEncounterTextField,
   validateNpcField,
   validateStoryEdit,
   validateStoryTextField,
@@ -42,7 +42,10 @@ const validStory: ParsedStory = {
   encounters: [
     {
       title: "The Silent Village",
-      content: "The party finds Ashfen quiet, cold, and watched.",
+      content: "The party finds Ashfen quiet, cold and watched.",
+      checks: [],
+      creatures: [],
+      puzzle: null,
     },
   ],
   npcs: [
@@ -153,7 +156,7 @@ describe("validateSelectionValue", () => {
 
 describe("getGenerationFormErrors", () => {
   describe("valid input", () => {
-    it("accepts preset genre, setting, races, and classes", () => {
+    it("accepts preset genre, setting, races and classes", () => {
       expect(getGenerationFormErrors(baseGenerationValues)).toEqual({
         genreError: null,
         settingError: null,
@@ -333,10 +336,10 @@ describe("validateStoryTextField", () => {
   });
 });
 
-describe("validateEncounterField", () => {
+describe("validateEncounterTextField", () => {
   describe("valid input", () => {
     it.each(encounterFieldCases)("accepts a valid %s value", (field) => {
-      expect(validateEncounterField(field, `Valid ${field}`)).toBeNull();
+      expect(validateEncounterTextField(field, `Valid ${field}`)).toBeNull();
     });
   });
 
@@ -344,16 +347,18 @@ describe("validateEncounterField", () => {
     it.each(encounterFieldCases)(
       "rejects an empty %s value",
       (field, _maxLength, label) => {
-        expect(validateEncounterField(field, "")).toBe(`${label} is required.`);
+        expect(validateEncounterTextField(field, "")).toBe(
+          `${label} is required.`,
+        );
       },
     );
 
     it.each(encounterFieldCases)(
       "rejects %s values above their maximum length",
       (field, maxLength, label) => {
-        expect(validateEncounterField(field, "a".repeat(maxLength + 1))).toBe(
-          `${label} must be ${maxLength} characters or less.`,
-        );
+        expect(
+          validateEncounterTextField(field, "a".repeat(maxLength + 1)),
+        ).toBe(`${label} must be ${maxLength} characters or less.`);
       },
     );
   });
@@ -426,7 +431,13 @@ describe("validateStoryEdit", () => {
     it("rejects invalid edited encounter fields", () => {
       const draft: ParsedStory = {
         ...validStory,
-        encounters: [{ title: "   ", content: "1234" }],
+        encounters: [
+          {
+            ...validStory.encounters[0],
+            title: "   ",
+            content: "1234",
+          },
+        ],
       };
 
       expect(
@@ -435,6 +446,58 @@ describe("validateStoryEdit", () => {
         [getEncounterErrorKey(0, "title")]: "Encounter title is required.",
         [getEncounterErrorKey(0, "content")]:
           "Encounter description must contain at least one letter.",
+      });
+    });
+
+    it("rejects invalid structured encounter fields", () => {
+      const draft: ParsedStory = {
+        ...validStory,
+        encounters: [
+          {
+            title: "The Silent Village",
+            content: "The party finds Ashfen quiet, cold and watched.",
+            checks: [
+              {
+                type: "ability check",
+                ability: "   ",
+                dc: Number.NaN,
+                purpose: "1234",
+                success: "The party spots the hidden shrine.",
+                failure: "The party loses time.",
+              },
+            ],
+            creatures: [
+              {
+                name: "1234",
+                quantity: 0,
+                role: "Threat",
+                combatTrigger: "The party attacks.",
+                goal: "Defend the shrine.",
+              },
+            ],
+            puzzle: {
+              type: "clue challenge",
+              prompt: "Read the shrine markings.",
+              answer: "The lower symbol opens the door.",
+              hints: ["   "],
+              alternateSolutions: ["Ask Mira to translate."],
+            },
+          },
+        ],
+      };
+
+      expect(
+        validateStoryEdit({ editingSection: "encounter-0", draft }),
+      ).toMatchObject({
+        "encounters.0.checks.0.ability": "Check ability is required.",
+        "encounters.0.checks.0.dc": "Check DC is required.",
+        "encounters.0.checks.0.purpose":
+          "Check purpose must contain at least one letter.",
+        "encounters.0.creatures.0.name":
+          "Creature name must contain at least one letter.",
+        "encounters.0.creatures.0.quantity":
+          "Creature quantity must be at least 1.",
+        "encounters.0.puzzle.hints.0": "Puzzle hint is required.",
       });
     });
 

@@ -172,7 +172,7 @@ Examples:
 # Security Rules
 
 - Do not access or expose `.env.local`, API keys or secrets unless explicitly requested for debugging purposes
-- Never print API keys, tokens, or secrets
+- Never print API keys, tokens or secrets
 - Never expose sensitive environment variables
 - Ignore build artifacts and generated files
 
