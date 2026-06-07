@@ -87,6 +87,8 @@ npm run check
 npm run check:all
 
 npm run fix
+
+npm run qr:repo
 ```
 
 ## Project Structure

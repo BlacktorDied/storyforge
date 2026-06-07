@@ -14,6 +14,7 @@
     "check": "npm run format:check && npm run lint && npm run typecheck",
     "check:all": "npm run format:check && npm run lint && npm run typecheck && npm run build",
     "fix": "npm run format:fix && npm run lint:fix",
+    "qr:repo": "node scripts/generate-repo-qr.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
@@ -23,6 +24,7 @@
     "lucide-react": "^1.16.0",
     "next": "^16.2.7",
     "openai": "^6.35.0",
+    "qrcode": "^1.5.4",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-markdown": "^10.1.0",
