@@ -11,7 +11,7 @@ export default function EditButton({ onClick }: Props) {
     <IconButton
       label="Edit"
       onClick={onClick}
-      className="text-muted hover:text-primary focus-visible:ring-primary/60 inline-flex size-5 items-center justify-center rounded-sm transition focus-visible:ring-2 focus-visible:outline-none"
+      className="inline-flex size-5 items-center justify-center rounded-sm text-muted transition hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
     >
       <Pencil className="size-3" aria-hidden="true" />
     </IconButton>

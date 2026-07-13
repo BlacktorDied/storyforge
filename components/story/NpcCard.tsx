@@ -33,7 +33,7 @@ export default function NpcCard({
   onCancel,
 }: Props) {
   return (
-    <div className="border-border bg-surface print-card group rounded border p-3">
+    <div className="print-card group rounded border border-border bg-surface p-3">
       {isEditing ? (
         <div className="space-y-2">
           <TextInput

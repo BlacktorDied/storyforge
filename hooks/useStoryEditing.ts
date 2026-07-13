@@ -8,7 +8,6 @@ import {
   type StoryTextField,
 } from "@/lib/storyEditing";
 import { cloneStoryDraft } from "@/lib/storyTransforms";
-import type { ParsedEncounter, ParsedNpc, ParsedStory } from "@/lib/types";
 import {
   getEncounterErrorKey,
   getNpcErrorKey,
@@ -18,6 +17,7 @@ import {
   validateStoryEdit,
   validateStoryTextField,
 } from "@/lib/storyValidation";
+import type { ParsedEncounter, ParsedNpc, ParsedStory } from "@/lib/types";
 
 export function useStoryEditing(
   story: ParsedStory,

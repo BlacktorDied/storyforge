@@ -42,7 +42,7 @@ export default function EditableTextSection({
             <TextInput
               value={draftValue}
               onChange={(event) => onChange(event.target.value)}
-              className="text-xl font-bold"
+              className="font-bold text-xl"
               hasError={Boolean(error)}
               aria-label={label}
               aria-invalid={Boolean(error)}
@@ -52,7 +52,7 @@ export default function EditableTextSection({
           </div>
         ) : (
           <>
-            <h2 className="text-xl font-bold">{value}</h2>
+            <h2 className="font-bold text-xl">{value}</h2>
             <EditButton onClick={onStartEdit} />
           </>
         )}

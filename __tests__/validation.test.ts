@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  type GenerationFormValues,
   getFirstGenerationErrorField,
   getGenerationFormErrors,
-  type GenerationFormValues,
 } from "@/lib/generationValidation";
 import {
   getEncounterErrorKey,
@@ -315,21 +315,19 @@ describe("validateStoryTextField", () => {
   });
 
   describe("invalid input", () => {
-    it.each(storyTextCases)(
-      "rejects an empty %s value",
-      (field, _maxLength, label) => {
-        expect(validateStoryTextField(field, "")).toBe(`${label} is required.`);
-      },
-    );
+    it.each(
+      storyTextCases,
+    )("rejects an empty %s value", (field, _maxLength, label) => {
+      expect(validateStoryTextField(field, "")).toBe(`${label} is required.`);
+    });
 
-    it.each(storyTextCases)(
-      "rejects %s values above their maximum length",
-      (field, maxLength, label) => {
-        expect(validateStoryTextField(field, "a".repeat(maxLength + 1))).toBe(
-          `${label} must be ${maxLength} characters or less.`,
-        );
-      },
-    );
+    it.each(
+      storyTextCases,
+    )("rejects %s values above their maximum length", (field, maxLength, label) => {
+      expect(validateStoryTextField(field, "a".repeat(maxLength + 1))).toBe(
+        `${label} must be ${maxLength} characters or less.`,
+      );
+    });
   });
 });
 
@@ -341,21 +339,19 @@ describe("validateEncounterField", () => {
   });
 
   describe("invalid input", () => {
-    it.each(encounterFieldCases)(
-      "rejects an empty %s value",
-      (field, _maxLength, label) => {
-        expect(validateEncounterField(field, "")).toBe(`${label} is required.`);
-      },
-    );
+    it.each(
+      encounterFieldCases,
+    )("rejects an empty %s value", (field, _maxLength, label) => {
+      expect(validateEncounterField(field, "")).toBe(`${label} is required.`);
+    });
 
-    it.each(encounterFieldCases)(
-      "rejects %s values above their maximum length",
-      (field, maxLength, label) => {
-        expect(validateEncounterField(field, "a".repeat(maxLength + 1))).toBe(
-          `${label} must be ${maxLength} characters or less.`,
-        );
-      },
-    );
+    it.each(
+      encounterFieldCases,
+    )("rejects %s values above their maximum length", (field, maxLength, label) => {
+      expect(validateEncounterField(field, "a".repeat(maxLength + 1))).toBe(
+        `${label} must be ${maxLength} characters or less.`,
+      );
+    });
   });
 });
 
@@ -367,21 +363,19 @@ describe("validateNpcField", () => {
   });
 
   describe("invalid input", () => {
-    it.each(npcFieldCases)(
-      "rejects an empty %s value",
-      (field, _maxLength, label) => {
-        expect(validateNpcField(field, "")).toBe(`${label} is required.`);
-      },
-    );
+    it.each(
+      npcFieldCases,
+    )("rejects an empty %s value", (field, _maxLength, label) => {
+      expect(validateNpcField(field, "")).toBe(`${label} is required.`);
+    });
 
-    it.each(npcFieldCases)(
-      "rejects %s values above their maximum length",
-      (field, maxLength, label) => {
-        expect(validateNpcField(field, "a".repeat(maxLength + 1))).toBe(
-          `${label} must be ${maxLength} characters or less.`,
-        );
-      },
-    );
+    it.each(
+      npcFieldCases,
+    )("rejects %s values above their maximum length", (field, maxLength, label) => {
+      expect(validateNpcField(field, "a".repeat(maxLength + 1))).toBe(
+        `${label} must be ${maxLength} characters or less.`,
+      );
+    });
   });
 });
 

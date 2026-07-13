@@ -1,10 +1,4 @@
 import { LoaderCircle } from "lucide-react";
-
-import Button from "./ui/Button";
-import InfoTooltip from "./ui/InfoTooltip";
-import MultiSelectWithMode from "./ui/MultiSelectWithMode";
-import SelectField from "./ui/SelectField";
-import SelectWithCustomOption from "./ui/SelectWithCustomOption";
 import {
   CLASSES,
   ENCOUNTER_COUNT_BY_SESSION_LENGTH,
@@ -17,6 +11,11 @@ import {
   type SessionLength,
 } from "@/lib/data";
 import type { SelectionMode } from "@/lib/types";
+import Button from "./ui/Button";
+import InfoTooltip from "./ui/InfoTooltip";
+import MultiSelectWithMode from "./ui/MultiSelectWithMode";
+import SelectField from "./ui/SelectField";
+import SelectWithCustomOption from "./ui/SelectWithCustomOption";
 
 type Props = {
   genre: string;

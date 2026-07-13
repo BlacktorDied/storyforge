@@ -1,6 +1,5 @@
-import FieldError from "./FieldError";
-
 import type { SelectionMode } from "@/lib/types";
+import FieldError from "./FieldError";
 
 type Props = {
   id?: string;
@@ -56,7 +55,7 @@ export default function MultiSelectWithMode({
               onSelectedOptionsChange([]);
               onValidationReset?.();
             }}
-            className="accent-primary mr-2"
+            className="mr-2 accent-primary"
           />
           <span className="font-medium">All official</span>
           <p className="text-muted text-sm">{allDescription}</p>

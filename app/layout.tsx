@@ -48,7 +48,7 @@ export default function RootLayout({
 
         <main className="flex-1">{children}</main>
 
-        <span className="text-muted fixed right-2 bottom-2 text-xs opacity-70">
+        <span className="fixed right-2 bottom-2 text-muted text-xs opacity-70">
           v{process.env.NEXT_PUBLIC_APP_VERSION}
         </span>
       </body>

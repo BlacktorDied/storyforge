@@ -17,7 +17,7 @@ export default function StoryActions({
     "inline-flex cursor-pointer items-center gap-1 px-3 py-2 text-sm font-medium text-text transition hover:bg-background";
 
   return (
-    <div className="border-border bg-surface fixed top-30 right-[max(1.5rem,calc((100%-80rem)/2+1.5rem))] z-50 inline-flex overflow-hidden rounded-lg border shadow-sm">
+    <div className="fixed top-30 right-[max(1.5rem,calc((100%-80rem)/2+1.5rem))] z-50 inline-flex overflow-hidden rounded-lg border border-border bg-surface shadow-sm">
       <button
         className={actionButtonClass}
         onClick={onCopy}
