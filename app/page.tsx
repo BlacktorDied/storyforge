@@ -1,9 +1,9 @@
 "use client";
 
 import StoryForm from "@/components/StoryForm";
+import StorySkeleton from "@/components/StorySkeleton";
 import StoryActions from "@/components/story/StoryActions";
 import StoryResult from "@/components/story/StoryResult";
-import StorySkeleton from "@/components/StorySkeleton";
 import { useStoryGenerator } from "@/hooks/useStoryGenerator";
 
 export default function StoryForgePage() {

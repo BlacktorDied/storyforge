@@ -17,7 +17,7 @@ export default function IconButton({
       type={type}
       aria-label={label}
       title={label}
-      className={`text-muted hover:text-text inline-flex cursor-pointer items-center justify-center rounded-sm transition focus-visible:ring-2 focus-visible:outline-none ${className}`}
+      className={`inline-flex cursor-pointer items-center justify-center rounded-sm text-muted transition hover:text-text focus-visible:outline-none focus-visible:ring-2 ${className}`}
       {...props}
     >
       {children}

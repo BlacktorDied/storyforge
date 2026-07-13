@@ -6,8 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "format:check": "prettier --check .",
-    "format:fix": "prettier --write .",
+    "format:check": "biome check .",
+    "format:fix": "biome check --write --unsafe .",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",
@@ -31,6 +31,7 @@
     "react-textarea-autosize": "^8.5.9"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.5.3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -38,8 +39,6 @@
     "@vitest/coverage-v8": "^4.1.7",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
-    "prettier": "^3.8.3",
-    "prettier-plugin-tailwindcss": "^0.8.0",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.7"

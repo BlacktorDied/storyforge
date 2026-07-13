@@ -33,7 +33,7 @@ export default function EncounterCard({
   onCancel,
 }: EncounterCardProps) {
   return (
-    <div className="border-border bg-surface print-card group rounded border p-3">
+    <div className="print-card group rounded border border-border bg-surface p-3">
       {isEditing ? (
         <div className="space-y-2">
           <TextInput

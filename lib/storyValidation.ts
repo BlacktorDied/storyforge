@@ -1,15 +1,15 @@
-import type { ParsedStory } from "@/lib/types";
-import { validateTextValue } from "@/lib/validation";
+import { getListItemIndex } from "@/lib/storyEditing";
 import {
+  type EncounterField,
   encounterFields,
   isStoryTextField,
-  npcFields,
-  type EncounterField,
   type NpcField,
+  npcFields,
   type StoryTextField,
 } from "@/lib/storyFields";
-import { getListItemIndex } from "@/lib/storyEditing";
 import { trimEncounter, trimNpc } from "@/lib/storyTransforms";
+import type { ParsedStory } from "@/lib/types";
+import { validateTextValue } from "@/lib/validation";
 
 export type StoryFieldErrors = Record<string, string>;
 

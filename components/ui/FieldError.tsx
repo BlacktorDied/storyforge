@@ -10,7 +10,7 @@ export default function FieldError({ error, id, className }: FieldErrorProps) {
   }
 
   return (
-    <p id={id} className={className ?? "text-error mt-1 text-xs"}>
+    <p id={id} className={className ?? "mt-1 text-error text-xs"}>
       {error}
     </p>
   );
